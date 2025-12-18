@@ -3,119 +3,127 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>FC67 — Ultimate Pack & KickOff</title>
+    <title>FC67 ULTIMATE — FULL SQUAD & ONLINE</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap');
         :root { --gold: #fbbf24; --bg: #0f172a; --card: #1e293b; --danger: #ef4444; --success: #22c55e; }
         * { box-sizing: border-box; font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: #fff; padding-bottom: 80px; overflow-x: hidden; }
 
-        /* UI Elements */
         .header { background: #1e293b; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 1100; }
-        .coin-badge { color: var(--gold); font-weight: 800; border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; font-size: 1.1rem; }
+        .coin-badge { color: var(--gold); font-weight: 800; border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; }
         .nav-bar { display: flex; background: #1e293b; border-bottom: 1px solid #334155; position: sticky; top: 62px; z-index: 1000; }
         .nav-bar button { flex: 1; padding: 15px; border: none; background: none; color: #94a3b8; font-weight: bold; cursor: pointer; }
         .nav-bar button.active { color: var(--gold); border-bottom: 4px solid var(--gold); }
         .tab { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .tab.active { display: block; }
 
-        /* Pitch */
-        .pitch { background: linear-gradient(to bottom, #14532d, #064e3b); border-radius: 20px; padding: 20px 10px; display: flex; flex-direction: column; justify-content: space-around; min-height: 480px; border: 2px solid #ffffff20; margin-bottom: 15px; }
-        .pitch-row { display: flex; justify-content: center; gap: 10px; }
-        .slot { width: 70px; height: 95px; border: 1px dashed #ffffff40; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); font-size: 0.65rem; text-align: center; }
-        .slot img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
-        
+        /* Pitch System */
+        .pitch { background: linear-gradient(to bottom, #14532d, #064e3b); border-radius: 20px; padding: 15px 5px; display: flex; flex-direction: column; justify-content: space-around; min-height: 520px; border: 2px solid #ffffff20; margin-bottom: 15px; position: relative; }
+        .pitch::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.1); }
+        .pitch-row { display: flex; justify-content: center; gap: 8px; z-index: 2; }
+        .slot { width: 65px; height: 85px; border: 1px dashed #ffffff40; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); font-size: 0.6rem; text-align: center; cursor: pointer; transition: 0.2s; }
+        .slot img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+        .slot.filled { border: 1px solid var(--gold); background: var(--card); }
+
         /* Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; }
-        .p-card { background: var(--card); border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #334155; transition: 0.3s; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+        .p-card { background: var(--card); border-radius: 12px; padding: 8px; text-align: center; border: 1px solid #334155; }
         .p-card.rare { border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
-        .p-card img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 5px; object-fit: cover; background: #000; }
-        .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 8px; margin-top: 5px; }
+        .p-card img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 5px; }
+        .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 8px; margin-top: 5px; font-size: 0.8rem; }
         .btn-gold { background: var(--gold); color: #000; }
 
-        /* Pack Opening Overlay */
-        #pack-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
-        .pack-container { position: relative; width: 200px; height: 280px; perspective: 1000px; }
-        .pack-card-visual { width: 100%; height: 100%; background: linear-gradient(135deg, #fbbf24, #d97706); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 5rem; box-shadow: 0 0 50px var(--gold); animation: shake 0.5s infinite; cursor: pointer; color: white; }
-        @keyframes shake { 0% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
-        .revealed-player { display: none; animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes zoomIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1.3); opacity: 1; } }
-
-        /* KickOff Overlay */
-        #ko-overlay { position: fixed; inset: 0; background: #0b0f1a; z-index: 5000; display: none; flex-direction: column; padding: 20px; }
-        .timeline { flex: 1; background: #1e293b; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 15px 0; display: flex; flex-direction: column-reverse; gap: 8px; }
-        .event { padding: 8px; border-bottom: 1px solid #ffffff10; font-size: 0.9rem; }
+        /* Overlays */
+        #pack-overlay, #ko-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
+        .pack-box { width: 180px; height: 250px; background: linear-gradient(135deg, var(--gold), #d97706); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 5rem; animation: shake 0.5s infinite; cursor: pointer; color: white; }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(4deg); } 75% { transform: rotate(-4deg); } }
+        .timeline { flex: 1; width: 100%; background: #1e293b; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 15px 0; display: flex; flex-direction: column-reverse; gap: 8px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="font-weight:900; color:var(--gold);">FC67 ULTIMATE</div>
-    <div class="coin-badge"><span id="coins-val">1000</span> 💰</div>
+    <div id="team-name-ui" style="font-weight:900; color:var(--gold);">FC67 LOADING...</div>
+    <div class="coin-badge"><span id="coins-val">0</span> 💰</div>
 </div>
 
 <div class="nav-bar">
-    <button id="btn-pitch" class="active" onclick="showTab('tab-pitch')">הקבוצה</button>
-    <button id="btn-market" onclick="showTab('tab-market')">השוק</button>
+    <button id="btn-pitch" class="active" onclick="showTab('tab-pitch')">הסגל</button>
+    <button id="btn-market" onclick="showTab('tab-market')">שוק</button>
     <button id="btn-store" onclick="showTab('tab-store')">חנות</button>
 </div>
 
 <div id="tab-pitch" class="tab active">
     <div class="pitch" id="pitch"></div>
-    <button class="btn" style="background:var(--success); height:55px; color:white; font-size:1.1rem;" onclick="tryStartMatch()">⚽ שחק KICK OFF (50 💰)</button>
+    <button class="btn" style="background:var(--success); color:white; height:50px; font-size:1rem;" onclick="tryStartMatch()">⚽ שחק KICK OFF (50 💰)</button>
     <h3>האוסף שלי</h3>
     <div id="my-collection" class="grid"></div>
 </div>
 
 <div id="tab-market" class="tab">
-    <h2 style="color:var(--gold)">שוק ההעברות</h2>
+    <h2 style="color:var(--gold)">שוק העברות אונליין</h2>
     <div id="market-list" class="grid"></div>
 </div>
 
 <div id="tab-store" class="tab">
     <div style="background:var(--card); padding:20px; border-radius:15px; text-align:center; border:2px solid var(--gold);">
-        <h3>חבילת שחקן</h3>
-        <p>15% סיכוי לשחקן נדיר (89+)</p>
-        <button class="btn btn-gold" onclick="tryOpenPack(250, 0.15)">250 💰</button>
+        <h3>חבילת זהב פרימיום</h3>
+        <button class="btn btn-gold" style="height:45px;" onclick="buyPack()">250 💰</button>
     </div>
 </div>
 
 <div id="pack-overlay">
-    <div class="pack-container" id="pack-anim-container">
-        <div class="pack-card-visual" onclick="revealPlayer()">❓</div>
-    </div>
-    <div id="player-reveal-area" style="text-align:center; display:none;">
-        <div id="revealed-card-content"></div>
-        <button class="btn btn-gold" style="width:200px; margin-top:80px;" onclick="finishOpening()">איסוף שחקן</button>
+    <div id="pack-visual" class="pack-box" onclick="revealPlayer()">❓</div>
+    <div id="reveal-area" style="display:none; text-align:center;">
+        <div id="card-content"></div>
+        <button class="btn btn-gold" style="width:200px; margin-top:50px;" onclick="collectPlayer()">איסוף</button>
     </div>
 </div>
 
-<div id="ko-overlay">
-    <div style="text-align:center; margin-bottom:10px;">
-        <div style="font-size:0.8rem; color:#94a3b8;">הקבוצה שלי VS <span id="opp-name">BOT FC</span></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-            <div id="ko-timer" style="color:red; font-weight:bold;">00:00</div>
-            <div id="ko-score" style="font-size:2.5rem; font-weight:900; color:var(--gold);">0 - 0</div>
-            <div style="width:40px;"></div>
-        </div>
+<div id="ko-overlay" style="background:#0b0f1a;">
+    <div style="text-align:center;">
+        <div style="color:#94a3b8;"><span style="color:var(--success)">אני</span> VS <span id="opp-team-name" style="color:var(--danger)">BOT FC</span></div>
+        <div id="match-score" style="font-size:3.5rem; font-weight:900; color:var(--gold);">0 - 0</div>
     </div>
     <div class="timeline" id="timeline"></div>
-    <button id="finish-btn" class="btn btn-gold" style="display:none;" onclick="closeMatch()">סיים וחזור</button>
+    <button id="exit-btn" class="btn btn-gold" style="display:none;" onclick="location.reload()">סיים משחק</button>
 </div>
 
 <script>
-    const allPlayers = [
-        {name:"הביגון", pos:"GK", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
+    // --- Firebase & Initial Data ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDAyQfRIPiJO2pENF4AF9LDWTjyLeOrQNY",
+        authDomain: "fc67-3de49.firebaseapp.com",
+        projectId: "fc67-3de49",
+        databaseURL: "https://fc67-3de49-default-rtdb.firebaseio.com/", 
+        storageBucket: "fc67-3de49.firebasestorage.app",
+        messagingSenderId: "484648478424",
+        appId: "1:484648478424:web:dfd4899b7477cc83f699ad"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let myId = localStorage.getItem('fc67_uid') || prompt("שם הקבוצה שלך?", "קבוצה_" + Math.floor(Math.random()*99));
+    localStorage.setItem('fc67_uid', myId);
+    document.getElementById('team-name-ui').innerText = myId;
+
+    const allPlayersList = [
+        {name:"הביגון", pos:"GK", rating:89, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Bigon"},
         {name:"דוד", pos:"DEF", rating:87, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=David"},
         {name:"טוי", pos:"FWD", rating:87, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Toy"},
         {name:"וויני", pos:"MID", rating:88, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Wini"},
         {name:"מר", pos:"FWD", rating:91, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Mar"},
         {name:"בובו", pos:"DEF", rating:77, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Bobo"},
-        {name:"מיכאל", pos:"MID", rating:77, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205100394516525/WhatsApp_Image_2025-12-18_at_12.56.32_1.jpeg?ex=69455392&is=69440212&hm=d2e80311a105a40ad9cdc648fb4c64a6babb3e39b7ae5f508ab46db1f242cf72&=&format=webp"},
-        {name:"שרק", pos:"FWD", rating:88, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
-        {name:"גבינה", pos:"MID", rating:87, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Gvina"},
+        {name:"מיכאל", pos:"MID", rating:77, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"},
+        {name:"שרק", pos:"FWD", rating:88, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Shrek"},
+        {name:"גבינה", pos:"MID", rating:87, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Cheese"},
         {name:"טלקר", pos:"DEF", rating:80, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Talker"},
-        {name:"דרופיקס", pos:"FWD", rating:85, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Dropix"},
+        {name:"דרופיקס", pos:"FWD", rating:85, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Drop"},
         {name:"שבותה", pos:"MID", rating:86, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Shvuta"},
         {name:"גולדי", pos:"MID", rating:84, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Goldi"},
         {name:"בום", pos:"FWD", rating:89, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Boom"},
@@ -126,170 +134,171 @@
         {name:"עילאי", pos:"DEF", rating:85, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Ilai"},
         {name:"קריסטל", pos:"MID", rating:89, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Crystal"},
         {name:"אור", pos:"FWD", rating:88, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Or"},
-        {name:"ליאם", pos:"MID", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451245036137087161/WhatsApp_Image_2025-12-18_at_12.56.32_5.jpeg?ex=694578c3&is=69442743&hm=9e56e31652474a39fc0ed86f49abc04fed770a47877ffddab30bc1adaa93cacb&=&format=webp"},
-        {name:"אינאגי ", pos:"FWD", rating:87, img:"https://media.discordapp.net/attachments/1406648962458583241/1451206068410519622/image.png?ex=69455478&is=694402f8&hm=920d3a6b9ffd6267c08675cd5faf8c5e3094134de6eecc3b8b5cc91a0db5f6c4&=&format=webp&quality=lossless"},
-        {name:"קייביס ", pos:"MID", rating:79, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205583414890567/image.png?ex=69455405&is=69440285&hm=d1442adf940a78fa464e065ca3c6c61ae13ab03427e9a190f78932760630a0c3&=&format=webp&quality=lossless"},
-        {name:"הראל", pos:"DEF", rating:86, img:"https://media.discordapp.net/attachments/1406648962458583241/1451245689387614371/WhatsApp_Image_2025-12-18_at_12.56.32_6.jpeg?ex=6945795f&is=694427df&hm=658c2fbc8740d3f7f8aafa6482098fff84636ec23c35bb397387bb9fb1ac0d5a&=&format=webp"},
-        {name:"טלקר", pos:"DEF", rating:80, img:"https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
-        {name:"אלימלך ", pos:"FWD", rating:86, img:"https://media.discordapp.net/attachments/1406648962458583241/1451245948519977041/WhatsApp_Image_2025-12-18_at_12.56.32_8.jpeg?ex=6945799c&is=6944281c&hm=fe208f327c14289637b5c2db21e714979a6f33e6cbfe0b466ea106989d081834&=&format=webp"},
-        {name:"איר ", pos:"GK", rating:90, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
-        {name:"בום", pos:"FWD", rating:88, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
+        {name:"דמפלה", pos:"FWD", rating:91, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Dempele"}
     ];
-    let state = { coins: 1000, collection: [allPlayers[5], allPlayers[6]], lineup: [], market: [], pendingPlayer: null };
+
+    let userData = { coins: 1000, collection: [], lineup: [] };
+    let tempP = null;
+
+    // --- Core Logic ---
+    db.ref('users/' + myId).on('value', snap => {
+        if(snap.val()) userData = snap.val();
+        else db.ref('users/' + myId).set(userData);
+        render();
+    });
+
+    db.ref('market').on('value', snap => {
+        const list = document.getElementById('market-list');
+        list.innerHTML = "";
+        const data = snap.val();
+        for(let key in data) {
+            const p = data[key];
+            if(p.seller !== myId) {
+                list.innerHTML += `<div class="p-card ${p.rating>=89?'rare':''}">
+                    <img src="${p.img}"><br><b>${p.name}</b><br>
+                    <b style="color:var(--gold)">${p.price} 💰</b><br>
+                    <button class="btn btn-gold" onclick="buyMarket('${key}', ${p.price})">קנה</button>
+                </div>`;
+            }
+        }
+    });
 
     function showTab(id) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + id.split('-')[1]).classList.add('active');
-        render();
     }
 
-    // --- Pack Animation Logic ---
-    function tryOpenPack(cost, chance) {
-        if (state.coins < cost) return alert("אין מספיק כסף!");
-        state.coins -= cost;
-        const available = allPlayers.filter(p => !([...state.collection, ...state.lineup].map(cp => cp.name).includes(p.name)));
-        if (available.length === 0) return alert("אספת הכל!");
-
-        const rare = available.filter(p => p.rating >= 89);
-        const normal = available.filter(p => p.rating < 89);
-        state.pendingPlayer = (rare.length > 0 && Math.random() < chance) ? rare[Math.floor(Math.random() * rare.length)] : (normal.length > 0 ? normal[Math.floor(Math.random() * normal.length)] : rare[0]);
-
+    function buyPack() {
+        if(userData.coins < 250) return alert("אין כסף!");
+        userData.coins -= 250;
+        tempP = allPlayersList[Math.floor(Math.random()*allPlayersList.length)];
         document.getElementById('pack-overlay').style.display = 'flex';
-        document.getElementById('pack-anim-container').style.display = 'block';
-        document.getElementById('player-reveal-area').style.display = 'none';
-        render();
+        document.getElementById('pack-visual').style.display = 'flex';
+        document.getElementById('reveal-area').style.display = 'none';
+        save();
     }
 
     function revealPlayer() {
-        const p = state.pendingPlayer;
-        document.getElementById('pack-anim-container').style.display = 'none';
-        const revealArea = document.getElementById('player-reveal-area');
-        const content = document.getElementById('revealed-card-content');
-        
-        revealArea.style.display = 'block';
-        content.innerHTML = `
-            <div class="p-card ${p.rating >= 89 ? 'rare' : ''}" style="transform: scale(1.5); margin: 0 auto;">
-                <h2 style="color:var(--gold); margin:0;">${p.rating >= 89 ? 'WALKOUT!!' : 'NEW PLAYER'}</h2>
-                <img src="${p.img}" style="width:100px; height:100px;">
-                <div style="font-size:1.3rem; font-weight:800;">${p.name}</div>
-                <div style="color:var(--gold);">${p.pos} | ${p.rating}</div>
-            </div>`;
-        content.className = "revealed-player";
-        content.style.display = "block";
+        document.getElementById('pack-visual').style.display = 'none';
+        document.getElementById('reveal-area').style.display = 'block';
+        document.getElementById('card-content').innerHTML = `<div class="p-card ${tempP.rating>=89?'rare':''}" style="transform:scale(1.4); margin:20px auto;"><img src="${tempP.img}"><br><b>${tempP.name}</b><br>${tempP.rating}</div>`;
     }
 
-    function finishOpening() {
-        state.collection.push({...state.pendingPlayer});
-        state.pendingPlayer = null;
+    function collectPlayer() {
+        if(!userData.collection) userData.collection = [];
+        userData.collection.push(tempP);
         document.getElementById('pack-overlay').style.display = 'none';
-        render();
+        save();
     }
 
-    // --- Kick Off Logic (Opponent vs Bot) ---
-    function tryStartMatch() {
-        if (state.lineup.length === 0) return alert("שים שחקנים בהרכב!");
-        if (state.coins < 50) return alert("צריך 50 מטבעות!");
-        
-        state.coins -= 50;
-        let oppName = "BOT FC";
-        if (state.market.length > 0) {
-            oppName = "הקבוצה של " + state.market[Math.floor(Math.random() * state.market.length)].name;
-        }
-        document.getElementById('opp-name').innerText = oppName;
-        startKickOff();
-    }
-
-    function startKickOff() {
+    async function tryStartMatch() {
+        if(!userData.lineup || userData.lineup.length === 0) return alert("שים לפחות שחקן אחד בהרכב!");
+        userData.coins -= 50;
+        save();
         document.getElementById('ko-overlay').style.display = 'flex';
-        document.getElementById('finish-btn').style.display = 'none';
-        const tl = document.getElementById('timeline');
-        tl.innerHTML = "<div class='event'><b>0'</b> המשחק יצא לדרך!</div>";
-        
+        const snap = await db.ref('users').once('value');
+        const users = Object.keys(snap.val() || {}).filter(u => u !== myId);
+        const opp = users.length > 0 ? users[Math.floor(Math.random()*users.length)] : "BOT FC";
+        document.getElementById('opp-team-name').innerText = opp;
+        runMatch();
+    }
+
+    function runMatch() {
         let score = [0, 0], min = 0;
-        const matchInterval = setInterval(() => {
-            min += 5;
-            document.getElementById('ko-timer').innerText = min + ":00";
-            if (Math.random() < 0.12) {
-                score[0]++;
-                const p = state.lineup[Math.floor(Math.random() * state.lineup.length)];
-                tl.innerHTML += `<div class='event'><b>${min}'</b> ⚽ <b>גול!</b> ${p.name} מבקיע!</div>`;
+        const tl = document.getElementById('timeline');
+        tl.innerHTML = "<div>שריקת פתיחה!</div>";
+        const inv = setInterval(() => {
+            min += 10;
+            if(Math.random() < 0.1) { score[0]++; tl.innerHTML += `<div>⚽ שער לך! (${min}')</div>`; }
+            if(Math.random() < 0.08) { score[1]++; tl.innerHTML += `<div style="color:red">❌ שער ליריב (${min}')</div>`; }
+            document.getElementById('match-score').innerText = `${score[0]} - ${score[1]}`;
+            if(min >= 90) {
+                clearInterval(inv);
+                const win = score[0] > score[1] ? 150 : (score[0]===score[1]?60:0);
+                userData.coins += win;
+                tl.innerHTML += `<div style="background:var(--gold); color:black; font-weight:bold; text-align:center; padding:5px;">סיום! הרווחת ${win} 💰</div>`;
+                document.getElementById('exit-btn').style.display = 'block';
+                save();
             }
-            if (Math.random() < 0.08) {
-                score[1]++;
-                tl.innerHTML += `<div class='event' style='color:red'><b>${min}'</b> ❌ שער ליריב.</div>`;
-            }
-            document.getElementById('ko-score').innerText = `${score[0]} - ${score[1]}`;
-            if (min >= 90) {
-                clearInterval(matchInterval);
-                let prize = score[0] > score[1] ? 150 : (score[0] === score[1] ? 60 : 0);
-                state.coins += prize;
-                tl.innerHTML += `<div class='event' style='background:var(--gold); color:#000; font-weight:bold;'>סיום! הרווחת ${prize} 💰</div>`;
-                document.getElementById('finish-btn').style.display = 'block';
-                render();
-            }
-        }, 300);
+        }, 400);
     }
 
-    function closeMatch() { document.getElementById('ko-overlay').style.display = 'none'; }
-
-    // --- Management Logic ---
-    function listForSale(idx) {
-        const p = state.collection[idx];
-        const pr = prompt("מחיר מכירה?", "500");
-        if(pr) { state.market.push({...p, mPrice: parseInt(pr), mId: Date.now()}); state.collection.splice(idx, 1); render(); }
-    }
-
-    function buyFromMarket(mId) {
-        const idx = state.market.findIndex(m => m.mId === mId);
-        if (state.coins < state.market[idx].mPrice) return alert("אין כסף!");
-        state.coins -= state.market[idx].mPrice;
-        state.collection.push({...state.market[idx]});
-        state.market.splice(idx, 1);
-        render();
-    }
-
-    function addToLineup(idx) {
-        const p = state.collection[idx];
-        const formation = { FWD: 3, MID: 3, DEF: 4, GK: 1 };
-        const slots = []; for (let i = 0; i < formation[p.pos]; i++) slots.push(p.pos + i);
-        const free = slots.find(sId => !state.lineup.find(lp => lp.slot === sId));
-        if (!free) return alert("עמדה מלאה!");
-        const player = state.collection.splice(idx, 1)[0];
-        player.slot = free; state.lineup.push(player); render();
+    function setLineup(idx) {
+        const p = userData.collection[idx];
+        const limits = { FWD: 3, MID: 3, DEF: 4, GK: 1 };
+        const count = (userData.lineup || []).filter(lp => lp.pos === p.pos).length;
+        if(count >= limits[p.pos]) return alert("אין מקום בעמדה זו!");
+        
+        const player = userData.collection.splice(idx, 1)[0];
+        if(!userData.lineup) userData.lineup = [];
+        player.sId = p.pos + "_" + Date.now();
+        userData.lineup.push(player);
+        save();
     }
 
     function removeFromLineup(sId) {
-        const idx = state.lineup.findIndex(l => l.slot === sId);
-        const p = state.lineup.splice(idx, 1)[0];
-        delete p.slot; state.collection.push(p); render();
+        const idx = userData.lineup.findIndex(p => p.sId === sId);
+        const p = userData.lineup.splice(idx, 1)[0];
+        delete p.sId;
+        userData.collection.push(p);
+        save();
     }
 
-    function render() {
-        document.getElementById('coins-val').innerText = state.coins;
-        const pitch = document.getElementById('pitch'); pitch.innerHTML = "";
-        const layout = [{p:'FWD', c:3}, {p:'MID', c:3}, {p:'DEF', c:4}, {p:'GK', c:1}];
-        layout.forEach(row => {
-            const div = document.createElement('div'); div.className = "pitch-row";
-            for(let i=0; i<row.c; i++) {
-                const sId = row.p + i; const p = state.lineup.find(l => l.slot === sId);
-                div.innerHTML += `<div class="slot" onclick="if(this.innerText!=='${row.p}')removeFromLineup('${sId}')">${p ? `<img src="${p.img}"><br>${p.name}` : row.p}</div>`;
-            }
-            pitch.appendChild(div);
-        });
-        document.getElementById('my-collection').innerHTML = state.collection.map((p, i) => `
-            <div class="p-card ${p.rating >= 89 ? 'rare' : ''}">
-                <div onclick="addToLineup(${i})"><img src="${p.img}"><br><b>${p.name}</b><br><small>${p.rating}</small></div>
-                <button class="btn" style="background:var(--danger); color:white; font-size:10px;" onclick="listForSale(${i})">מכור</button>
-            </div>`).join('');
-        document.getElementById('market-list').innerHTML = state.market.map(m => `
-            <div class="p-card ${m.rating >= 89 ? 'rare' : ''}">
-                <img src="${m.img}"><br><b>${m.name}</b><br><b style="color:var(--gold)">${m.mPrice} 💰</b>
-                <button class="btn btn-gold" onclick="buyFromMarket(${m.mId})">קנה</button>
-            </div>`).join('');
+    function sellMarket(idx) {
+        const pr = prompt("מחיר מכירה?", "500");
+        if(pr) {
+            db.ref('market').push({...userData.collection[idx], seller: myId, price: parseInt(pr)});
+            userData.collection.splice(idx, 1);
+            save();
+        }
     }
-    render();
+
+    function buyMarket(key, price) {
+        if(userData.coins < price) return alert("אין כסף!");
+        db.ref('market/' + key).once('value', s => {
+            userData.coins -= price;
+            if(!userData.collection) userData.collection = [];
+            userData.collection.push(s.val());
+            db.ref('market/' + key).remove();
+            save();
+        });
+    }
+
+    function save() { db.ref('users/' + myId).set(userData); }
+
+    function render() {
+        document.getElementById('coins-val').innerText = userData.coins;
+        const pitch = document.getElementById('pitch');
+        pitch.innerHTML = "";
+        const rows = [
+            {pos: 'FWD', count: 3},
+            {pos: 'MID', count: 3},
+            {pos: 'DEF', count: 4},
+            {pos: 'GK', count: 1}
+        ];
+        rows.forEach(r => {
+            const d = document.createElement('div'); d.className = "pitch-row";
+            const inLineup = (userData.lineup || []).filter(p => p.pos === r.pos);
+            for(let i=0; i<r.count; i++) {
+                const p = inLineup[i];
+                d.innerHTML += `<div class="slot ${p?'filled':''}" onclick="${p?`removeFromLineup('${p.sId}')`:''}">
+                    ${p ? `<img src="${p.img}"><br>${p.name}` : r.pos}
+                </div>`;
+            }
+            pitch.appendChild(d);
+        });
+
+        const coll = document.getElementById('my-collection');
+        coll.innerHTML = (userData.collection || []).map((p, i) => `
+            <div class="p-card ${p.rating>=89?'rare':''}">
+                <img src="${p.img}"><br><b>${p.name}</b><br><small>${p.pos} | ${p.rating}</small>
+                <button class="btn btn-gold" onclick="setLineup(${i})">להרכב</button>
+                <button class="btn" style="color:red" onclick="sellMarket(${i})">שוק</button>
+            </div>
+        `).join('');
+    }
 </script>
 </body>
 </html>

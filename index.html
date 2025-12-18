@@ -1,205 +1,166 @@
 <!DOCTYPE html>
 <html lang="he">
 <head>
-  <meta charset="UTF-8" />
-  <title>FC67 Ultimate – Online Edition</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>FC67 Ultimate – Email Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rubik:wght@300;400;600&display=swap" rel="stylesheet">
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rubik:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Rubik', sans-serif;
-      background: radial-gradient(circle at top, #0b2a4a, #020b16);
-      color: #fff;
-      overflow-x: hidden;
-    }
-
-    header {
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(90deg, #111, #1b1b1b);
-      box-shadow: 0 5px 25px rgba(0,0,0,.5);
-    }
-
-    header h1 {
-      font-family: 'Orbitron';
-      margin: 0;
-      color: #00e5ff;
-    }
-
-    button {
-      background: linear-gradient(135deg, #00e5ff, #0066ff);
-      border: none;
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 15px rgba(0,229,255,.5);
-    }
-
-    #login {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    #game {
-      display: none;
-      padding: 20px;
-    }
-
-    .pitch {
-      width: 100%;
-      max-width: 900px;
-      height: 520px;
-      margin: 30px auto;
-      background: linear-gradient(#1f7a1f, #145214);
-      border-radius: 22px;
-      position: relative;
-      box-shadow: inset 0 0 0 4px rgba(255,255,255,.15);
-    }
-
-    .center-circle {
-      width: 140px;
-      height: 140px;
-      border: 3px solid rgba(255,255,255,.6);
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .player {
-      width: 34px;
-      height: 34px;
-      background: #fff;
-      border-radius: 50%;
-      position: absolute;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      color: #000;
-      box-shadow: 0 0 10px rgba(0,0,0,.5);
-    }
-
-    .market {
-      max-width: 900px;
-      margin: 40px auto;
-      background: rgba(0,0,0,.4);
-      padding: 20px;
-      border-radius: 18px;
-    }
-
-    .market-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-    }
-  </style>
+<style>
+body { margin:0; font-family:'Rubik',sans-serif; background:#020b16; color:#fff; overflow-x:hidden; }
+#login { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; gap:10px; }
+#login input { padding:10px; border-radius:8px; border:none; width:250px; }
+#login button { padding:10px 20px; border:none; border-radius:10px; background:#00e5ff; color:#000; font-weight:bold; cursor:pointer; }
+#game { display:none; padding:20px; }
+header { display:flex; justify-content:space-between; align-items:center; background:#111; padding:16px; border-radius:10px; }
+.pitch { width:100%; max-width:900px; height:520px; margin:30px auto; background:linear-gradient(#1f7a1f,#145214); border-radius:22px; position:relative; box-shadow:inset 0 0 0 4px rgba(255,255,255,.15); }
+.center-circle { width:140px;height:140px;border:3px solid rgba(255,255,255,.6);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.player { width:34px;height:34px;background:#fff;border-radius:50%;position:absolute;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#000;box-shadow:0 0 10px rgba(0,0,0,.5); cursor:pointer; }
+.market { max-width:900px;margin:40px auto;background:rgba(0,0,0,.4);padding:20px;border-radius:18px; }
+.market-item { display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid rgba(255,255,255,.1);}
+.btn { padding:5px 10px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; background:#00e5ff; color:#000; }
+</style>
 </head>
 <body>
 
 <div id="login">
-  <button id="googleLogin">התחברות עם Google</button>
+  <input type="email" id="emailInput" placeholder="Email">
+  <input type="password" id="passInput" placeholder="Password">
+  <button id="emailLogin">התחבר / הירשם</button>
 </div>
 
 <div id="game">
-  <header>
-    <h1>FC67 Ultimate</h1>
-    <div id="userInfo"></div>
-  </header>
+<header>
+  <h1>FC67 Ultimate</h1>
+  <div id="userInfo"></div>
+  <div>Coins: <span id="coinVal">0</span> 🪙</div>
+</header>
 
-  <div class="pitch" id="pitch">
-    <div class="center-circle"></div>
-  </div>
+<div class="pitch" id="pitch">
+  <div class="center-circle"></div>
+</div>
 
-  <div class="market" id="market">
-    <h2>שוק העברות אונליין</h2>
-    <div id="marketList"></div>
-  </div>
+<div class="market">
+  <h2>שוק העברות אונליין</h2>
+  <div id="marketList"></div>
+</div>
 </div>
 
 <script>
 /************** FIREBASE CONFIG **************/
 const firebaseConfig = {
-  apiKey: "AIzaSyDAyQfRIPiJO2pENF4AF9LDWTjyLeOrQNY",
-  authDomain: "fc67-3de49.firebaseapp.com",
-  projectId: "fc67-3de49"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+  projectId: "YOUR_PROJECT",
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-/************** AUTH **************/
-document.getElementById('googleLogin').onclick = () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider);
+/************** GAME STATE **************/
+const kickoffPositions = [
+  {x:50,y:50}, // GK
+  {x:20,y:20},{x:20,y:50},{x:20,y:80}, // DEF
+  {x:45,y:25},{x:45,y:75}, // MID
+  {x:70,y:20},{x:70,y:50},{x:70,y:80}, // FWD
+  {x:55,y:45},{x:55,y:55} // Extra MID/FWD
+];
+
+const ORIG_PLAYERS = [
+  {name:"גולדי", rat:84, pos:"MID"}, {name:"דמפלה", rat:91, pos:"FWD"},
+  {name:"בום", rat:89, pos:"FWD"}, {name:"עילאי", rat:85, pos:"DEF"},
+  {name:"שרק", rat:88, pos:"MID"}, {name:"הביגון", rat:89, pos:"GK"},
+  {name:"שבותה", rat:86, pos:"MID"}, {name:"איר", rat:90, pos:"GK", rare:true},
+  {name:"פדרי", rat:88, pos:"MID", rare:true}, {name:"גבינה", rat:87, pos:"MID", rare:true}
+];
+
+let state = { user: null, coins: 1000, club: [], lineup: [] };
+
+/************** AUTH EMAIL **************/
+document.getElementById('emailLogin').onclick = () => {
+  const email = document.getElementById('emailInput').value.trim();
+  const pass = document.getElementById('passInput').value.trim();
+  if(!email || !pass) return alert("מלא את כל השדות");
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(userCred => {
+      console.log("נכנס בהצלחה:", userCred.user.email);
+    })
+    .catch(err => {
+      if(err.code === "auth/user-not-found"){
+        auth.createUserWithEmailAndPassword(email, pass)
+          .then(userCred => {
+            console.log("משתמש חדש נוצר:", userCred.user.email);
+          })
+          .catch(e => alert("שגיאה ביצירת משתמש: "+e.message));
+      } else {
+        alert("שגיאה בהתחברות: "+err.message);
+      }
+    });
 };
 
+/************** ON AUTH CHANGE **************/
 auth.onAuthStateChanged(user => {
-  if (!user) return;
+  if(!user) return;
+  state.user = user;
   document.getElementById('login').style.display = 'none';
   document.getElementById('game').style.display = 'block';
-  document.getElementById('userInfo').innerText = user.displayName;
+  document.getElementById('userInfo').innerText = user.email;
+
+  // load user data or init
+  db.ref('users/'+user.uid).once('value').then(snap => {
+    if(snap.exists()){
+      const data = snap.val();
+      state.coins = data.coins || 1000;
+      state.club = data.club || [];
+      state.lineup = data.lineup || [];
+      render();
+    } else {
+      db.ref('users/'+user.uid).set({coins:1000, club:[], lineup:[]});
+    }
+  });
+
   initKickOff();
   loadMarket();
 });
 
-/************** KICK OFF POSITIONS **************/
-const kickoffPositions = [
-  {x:50,y:50}, // GK
-  {x:20,y:20},{x:20,y:50},{x:20,y:80},
-  {x:45,y:25},{x:45,y:75},
-  {x:70,y:20},{x:70,y:50},{x:70,y:80},
-  {x:55,y:45},{x:55,y:55}
-];
-
-function initKickOff() {
+/************** KICK OFF **************/
+function initKickOff(){
   const pitch = document.getElementById('pitch');
-  pitch.querySelectorAll('.player').forEach(p => p.remove());
-
-  kickoffPositions.forEach((pos,i) => {
+  pitch.querySelectorAll('.player').forEach(p=>p.remove());
+  kickoffPositions.forEach((pos,i)=>{
     const p = document.createElement('div');
-    p.className = 'player';
+    p.className='player';
     p.innerText = i+1;
-    p.style.left = `calc(${pos.x}% - 17px)`;
-    p.style.top = `calc(${pos.y}% - 17px)`;
+    p.style.left=`calc(${pos.x}% - 17px)`;
+    p.style.top=`calc(${pos.y}% - 17px)`;
     pitch.appendChild(p);
   });
 }
 
 /************** ONLINE MARKET **************/
-function loadMarket() {
+function loadMarket(){
   const list = document.getElementById('marketList');
-  db.ref('market').on('value', snap => {
-    list.innerHTML = '';
-    snap.forEach(child => {
+  db.ref('market').on('value', snap=>{
+    list.innerHTML='';
+    snap.forEach(child=>{
       const item = child.val();
       const row = document.createElement('div');
-      row.className = 'market-item';
-      row.innerHTML = `<span>${item.name} (${item.price}💰)</span>`;
-      if (item.owner !== auth.currentUser.uid) {
+      row.className='market-item';
+      row.innerHTML=`<span>${item.name} (${item.price}💰)</span>`;
+      if(item.owner!==state.user.uid){
         const btn = document.createElement('button');
-        btn.innerText = 'קנה';
-        btn.onclick = () => buyPlayer(child.key, item);
+        btn.className='btn';
+        btn.innerText='קנה';
+        btn.onclick=()=>buyPlayer(child.key,item);
         row.appendChild(btn);
       }
       list.appendChild(row);
@@ -207,15 +168,18 @@ function loadMarket() {
   });
 }
 
-function buyPlayer(id, item) {
-  db.ref('market/' + id).remove();
-  alert('הרכישה בוצעה!');
+function buyPlayer(id,item){
+  if(state.coins<item.price) return alert("אין מספיק Coins!");
+  state.coins -= item.price;
+  state.club.push({name:item.name, rat:item.rat});
+  db.ref('users/'+state.user.uid).update({coins:state.coins, club:state.club});
+  db.ref('market/'+id).remove();
+  render();
 }
 
-/************** BASIC TESTS **************/
-console.assert(Array.isArray(kickoffPositions), 'kickoffPositions must be an array');
-console.assert(kickoffPositions.length === 11, 'There must be exactly 11 kickoff positions');
+function render(){
+  document.getElementById('coinVal').innerText=state.coins;
+}
 </script>
-
 </body>
 </html>

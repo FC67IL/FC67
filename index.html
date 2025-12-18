@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>FC67 ULTIMATE — MARKET RETURN</title>
+    <title>FC67 ULTIMATE — MARKET & KICKOFF FIXED</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -30,15 +30,15 @@
         .slot img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
         .slot.filled { border: 2px solid var(--gold); background: var(--card); border-style: solid; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
         .p-card { background: var(--card); border-radius: 12px; padding: 8px; text-align: center; border: 1px solid #334155; transition: 0.3s; position: relative; }
         .p-card.ultra { border: 2px solid var(--special); box-shadow: 0 0 15px var(--special); }
         .p-card img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 5px; object-fit: cover; }
         
-        .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 8px; margin-top: 5px; font-size: 0.75rem; }
+        .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 8px; margin-top: 5px; font-size: 0.8rem; }
         .btn-gold { background: var(--gold); color: #000; }
         .btn-sell { background: #334155; color: #ff9999; }
-        .btn-buy { background: var(--success); color: white; }
+        .btn-buy { background: var(--success); color: #fff; }
 
         #pack-overlay, #ko-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center; }
         .timeline { flex: 1; width: 100%; background: #1e293b; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 15px 0; display: flex; flex-direction: column-reverse; gap: 8px; }
@@ -68,15 +68,13 @@
 </div>
 
 <div id="tab-market" class="tab">
-    <h2 style="color:var(--gold)">שוק העברות</h2>
-    <p style="font-size: 0.8rem; opacity: 0.7;">קנה שחקנים שזמינים כרגע בשוק:</p>
+    <h3 style="color:var(--gold)">שוק ההעברות</h3>
     <div id="market-list" class="grid"></div>
 </div>
 
 <div id="tab-store" class="tab">
     <div style="background:var(--card); padding:20px; border-radius:15px; text-align:center;">
         <h3>חבילת בסיס (80+)</h3>
-        <p style="font-size:0.8rem; opacity:0.7;">סיכוי נמוך ל-87+</p>
         <button class="btn btn-gold" onclick="buyPack('regular')">250 💰</button>
     </div>
     <br>
@@ -92,7 +90,7 @@
         <div class="vs-screen">
             <div>
                 <div style="color:var(--success)">הסגל שלך</div>
-                <div id="my-ovr" style="font-size:1.5rem; font-weight:800;">88</div>
+                <div id="my-ovr" style="font-size:1.5rem; font-weight:800;">0</div>
             </div>
             <div style="font-size:2rem; font-weight:900;">VS</div>
             <div class="rival-card">
@@ -132,28 +130,22 @@
     document.getElementById('team-name-ui').innerText = myId;
 
     const players = [
-        {name:"הביגון", pos:"GK", rating:67, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
+        {name:"הביגון", pos:"GK", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
         {name:"דוד", pos:"DEF", rating:87, img:"https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960"},
         {name:"טוי", pos:"FWD", rating:87, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
         {name:"וויני", pos:"MID", rating:88, img:"https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
         {name:"מר", pos:"FWD", rating:91, img:"https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
-        {name:"שרק", pos:"FWD", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
-        {name:"איר", pos:"GK", rating:91, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
-        {name:"כושי", pos:"FWD", rating:99, img:"https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"}, 
+        {name:"כושי", pos:"FWD", rating:99, img:"https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"}
     ];
 
     let userData = { coins: 1000, collection: [], lineup: [] };
 
-    // טעינת מידע משתמש
     db.ref('users/' + myId).on('value', snap => {
         if(snap.val()) userData = snap.val();
         render();
     });
 
-    // האזנה לשוק
-    db.ref('market').on('value', snap => {
-        renderMarket(snap.val());
-    });
+    db.ref('market').on('value', snap => renderMarket(snap.val()));
 
     function showTab(id) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -171,7 +163,7 @@
         if(type === 'special' && Math.random() < 0.1) {
             rolled = players.find(p => p.name === "כושי");
         } else {
-            let isHigh = Math.random() < 0.2; // 20% סיכוי ל-87+
+            let isHigh = Math.random() < 0.15;
             let pool = players.filter(p => isHigh ? p.rating >= 87 : p.rating < 87);
             if(pool.length === 0) pool = players;
             rolled = pool[Math.floor(Math.random()*pool.length)];
@@ -185,46 +177,32 @@
         save();
     }
 
-    // פונקציית מכירה לשוק
     function sellPlayer(sId) {
         const idx = userData.collection.findIndex(p => p.sId === sId);
         if(idx !== -1) {
             const p = userData.collection[idx];
-            let price = p.rating * 5; // מחיר בשוק
-            
-            // הוספה לשוק הגלובלי
-            db.ref('market/' + sId).set({
-                ...p,
-                seller: myId,
-                marketPrice: price
-            });
-
+            let marketPrice = p.rating * 3;
+            db.ref('market/' + sId).set({...p, seller: myId, marketPrice});
             userData.collection.splice(idx, 1);
             save();
-            alert(`השחקן הועלה לשוק ב-${price} 💰`);
+            alert("השחקן הועלה לשוק!");
         }
     }
 
     function buyFromMarket(sId, price, seller) {
-        if(userData.coins < price) return alert("אין לך מספיק כסף!");
+        if(userData.coins < price) return alert("חסר כסף!");
         if(seller === myId) return alert("זה השחקן שלך!");
-
-        userData.coins -= price;
+        
         db.ref('market/' + sId).once('value', snap => {
-            let p = snap.val();
-            if(!p) return alert("השחקן כבר נמכר!");
+            const p = snap.val();
+            if(!p) return alert("השחקן כבר לא בשוק.");
             
+            userData.coins -= price;
             if(!userData.collection) userData.collection = [];
             userData.collection.push(p);
-            
-            // מחיקה מהשוק
             db.ref('market/' + sId).remove();
-            
-            // שליחת כסף למוכר
             db.ref('users/' + seller + '/coins').transaction(c => (c || 0) + price);
-            
             save();
-            alert("קנייה הצליחה!");
         });
     }
 
@@ -249,14 +227,16 @@
     function startMatchFlow() {
         if(!userData.lineup || userData.lineup.length < 1) return alert("שים שחקן בהרכב!");
         userData.coins -= 50;
+        
+        let myOvr = Math.round(userData.lineup.reduce((a,b)=>a+b.rating, 0) / userData.lineup.length);
+        let botOvr = Math.floor(Math.random() * 15) + 80;
+        
+        document.getElementById('my-ovr').innerText = myOvr;
+        document.getElementById('bot-ovr').innerText = botOvr;
         document.getElementById('ko-overlay').style.display = 'flex';
         document.getElementById('vs-display').style.display = 'block';
         document.getElementById('match-live').style.display = 'none';
-        
-        let myOvr = Math.round(userData.lineup.reduce((a,b)=>a+b.rating, 0) / userData.lineup.length);
-        let botOvr = Math.floor(Math.random() * 15) + 80; 
-        document.getElementById('my-ovr').innerText = myOvr;
-        document.getElementById('bot-ovr').innerText = botOvr;
+        window.currentMatch = { myOvr, botOvr };
         save();
     }
 
@@ -266,13 +246,12 @@
         let score = [0,0], min = 0;
         const tl = document.getElementById('timeline');
         tl.innerHTML = "";
-        const hasKushi = userData.lineup.some(p => p.name === "כושי");
 
         const inv = setInterval(() => {
             min += 10;
-            let chance = hasKushi ? 0.35 : 0.1;
-            if(Math.random() < chance) { score[0]++; tl.innerHTML += `<div>⚽ גול! (${min}')</div>`; }
-            if(Math.random() < 0.08) { score[1]++; tl.innerHTML += `<div style="color:red">❌ ספגת (${min}')</div>`; }
+            if(Math.random() * window.currentMatch.myOvr > 45) { score[0]++; tl.innerHTML += `<div>⚽ גול! (${min}')</div>`; }
+            if(Math.random() * window.currentMatch.botOvr > 50) { score[1]++; tl.innerHTML += `<div style="color:red">❌ ספגת (${min}')</div>`; }
+            
             document.getElementById('match-score').innerText = `${score[0]} - ${score[1]}`;
             if(min >= 90) {
                 clearInterval(inv);
@@ -285,19 +264,15 @@
 
     function save() { db.ref('users/' + myId).set(userData); }
 
-    function renderMarket(marketData) {
-        const list = document.getElementById('market-list');
-        if(!marketData) { list.innerHTML = "השוק ריק כרגע..."; return; }
-        
-        list.innerHTML = Object.keys(marketData).map(key => {
-            const p = marketData[key];
-            return `
-                <div class="p-card ${p.name==='כושי'?'ultra':''}">
-                    <img src="${p.img}"><br><b>${p.name}</b><br><small>${p.rating}</small>
-                    <div style="color:var(--gold); font-weight:bold;">${p.marketPrice} 💰</div>
-                    <button class="btn btn-buy" onclick="buyFromMarket('${key}', ${p.marketPrice}, '${p.seller}')">קנה</button>
-                </div>
-            `;
+    function renderMarket(data) {
+        const marketDiv = document.getElementById('market-list');
+        if(!data) return marketDiv.innerHTML = "השוק ריק.";
+        marketDiv.innerHTML = Object.keys(data).map(key => {
+            const p = data[key];
+            return `<div class="p-card">
+                <img src="${p.img}"><br><b>${p.name}</b><br>${p.marketPrice} 💰
+                <button class="btn btn-buy" onclick="buyFromMarket('${key}', ${p.marketPrice}, '${p.seller}')">קנה</button>
+            </div>`;
         }).join('');
     }
 
@@ -323,7 +298,7 @@
             <div class="p-card ${p.name==='כושי'?'ultra':''}">
                 <img src="${p.img}"><br><b>${p.name}</b><br><small>${p.rating}</small>
                 <button class="btn btn-gold" onclick="setLineup('${p.sId}')">להרכב</button>
-                <button class="btn btn-sell" onclick="sellPlayer('${p.sId}')">למכור בשוק</button>
+                <button class="btn btn-sell" onclick="sellPlayer('${p.sId}')">מכור בשוק</button>
             </div>
         `).join('');
     }

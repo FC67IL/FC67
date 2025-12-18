@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>FC67 ULTIMATE — MARKET & RIVAL</title>
+    <title>FC67 ULTIMATE — MARKET RETURN</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -30,14 +30,15 @@
         .slot img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
         .slot.filled { border: 2px solid var(--gold); background: var(--card); border-style: solid; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-        .p-card { background: var(--card); border-radius: 12px; padding: 8px; text-align: center; border: 1px solid #334155; transition: 0.3s; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; }
+        .p-card { background: var(--card); border-radius: 12px; padding: 8px; text-align: center; border: 1px solid #334155; transition: 0.3s; position: relative; }
         .p-card.ultra { border: 2px solid var(--special); box-shadow: 0 0 15px var(--special); }
         .p-card img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 5px; object-fit: cover; }
         
-        .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 8px; margin-top: 5px; font-size: 0.8rem; }
+        .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 8px; margin-top: 5px; font-size: 0.75rem; }
         .btn-gold { background: var(--gold); color: #000; }
         .btn-sell { background: #334155; color: #ff9999; }
+        .btn-buy { background: var(--success); color: white; }
 
         #pack-overlay, #ko-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center; }
         .timeline { flex: 1; width: 100%; background: #1e293b; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 15px 0; display: flex; flex-direction: column-reverse; gap: 8px; }
@@ -55,6 +56,7 @@
 
 <div class="nav-bar">
     <button id="btn-pitch" class="active" onclick="showTab('tab-pitch')">הסגל</button>
+    <button id="btn-market" onclick="showTab('tab-market')">שוק</button>
     <button id="btn-store" onclick="showTab('tab-store')">חנות</button>
 </div>
 
@@ -63,6 +65,12 @@
     <button class="btn" style="background:var(--success); color:white; height:50px;" onclick="startMatchFlow()">⚽ שחק נגד יריב (50 💰)</button>
     <h3 style="margin-top:20px;">האוסף שלי</h3>
     <div id="my-collection" class="grid"></div>
+</div>
+
+<div id="tab-market" class="tab">
+    <h2 style="color:var(--gold)">שוק העברות</h2>
+    <p style="font-size: 0.8rem; opacity: 0.7;">קנה שחקנים שזמינים כרגע בשוק:</p>
+    <div id="market-list" class="grid"></div>
 </div>
 
 <div id="tab-store" class="tab">
@@ -129,34 +137,22 @@
         {name:"טוי", pos:"FWD", rating:87, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
         {name:"וויני", pos:"MID", rating:88, img:"https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
         {name:"מר", pos:"FWD", rating:91, img:"https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
-        {name:"בובו", pos:"DEF", rating:77, img:"https://taoos.co.il/product/%D7%90%D7%99%D7%A9-%D7%A9%D7%9C%D7%92-%D7%9E%D7%97%D7%9C%D7%99%D7%A7-%D7%A2%D7%9C-%D7%A7%D7%A8%D7%97-%D7%9B%D7%95%D7%91%D7%A2-%D7%9B%D7%97%D7%95%D7%9C/"},
-        {name:"מיכאל", pos:"MID", rating:77, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205100394516525/WhatsApp_Image_2025-12-18_at_12.56.32_1.jpeg?ex=69455392&is=69440212&hm=d2e80311a105a40ad9cdc648fb4c64a6babb3e39b7ae5f508ab46db1f242cf72&=&format=webp"},
         {name:"שרק", pos:"FWD", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
-        {name:"גבינה", pos:"MID", rating:87, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336082552651776/VRFS__2025-12-18_18-35-31.jpg?ex=6945cd8e&is=69447c0e&hm=b23825cfe2af008d946eea0c607562b4fd0b6377b3f4167f731e617e30a1f67c&=&format=webp"},
-        {name:"טלקר", pos:"DEF", rating:80, img:"https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
-        {name:"דרופיקס", pos:"FWD", rating:85, img:"https://media.discordapp.net/attachments/1451328561226190929/1451335844064657531/2025-12-19_001025.png?ex=6945cd55&is=69447bd5&hm=857282b63386835b860c775eb4920a0258fade2497bc9e7924395d5071285da3&=&format=webp&quality=lossless"},
-        {name:"שבותה", pos:"MID", rating:86, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336624318320691/2025-12-19_001354.png?ex=6945ce0f&is=69447c8f&hm=627bec49930ba5e8d88d9b6e8974327936ba5e8ed3ccd6084dc4f5420f20fbe6&=&format=webp&quality=lossless"},
-        {name:"גולדי", pos:"MID", rating:84, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337038656966817/gold-1920w.webp?ex=6945ce72&is=69447cf2&hm=dfc3efac8e6073074fbe6f7a19c7badf1751e8acc33b55f77aa6e3e1ab38816d&=&format=webp"},
-        {name:"בום", pos:"FWD", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
-        {name:"יונתן_פדרי", pos:"MID", rating:88, img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
-        {name:"רין", pos:"FWD", rating:82, img:"https://www.picshare.co.il/m_pictures/img153010.jpg"},
-        {name:"שף", pos:"FWD", rating:78, img:"https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
         {name:"איר", pos:"GK", rating:91, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
-        {name:"עילאי", pos:"DEF", rating:85, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
-        {name:"קריסטל", pos:"MID", rating:89, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
-        {name:"אור", pos:"FWD", rating:88, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
-        {name:"יאיא", pos:"FWD", rating:86, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327661803831488/VRFS__2025-12-18_18-27-18.jpg?ex=6945c5b6&is=69447436&hm=7d74b821c4941f765db80ad8c1995eef2bb99784db86858d5c5932c4b3d986f0&=&format=webp"},
-        {name:"איירון ", pos:"DEF", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
-        {name:"איתמר ", pos:"MID", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
-        {name:"אקספרין  ", pos:"MID", rating:84, img:"https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"}, 
         {name:"כושי", pos:"FWD", rating:99, img:"https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"}, 
     ];
 
     let userData = { coins: 1000, collection: [], lineup: [] };
 
+    // טעינת מידע משתמש
     db.ref('users/' + myId).on('value', snap => {
         if(snap.val()) userData = snap.val();
         render();
+    });
+
+    // האזנה לשוק
+    db.ref('market').on('value', snap => {
+        renderMarket(snap.val());
     });
 
     function showTab(id) {
@@ -175,9 +171,7 @@
         if(type === 'special' && Math.random() < 0.1) {
             rolled = players.find(p => p.name === "כושי");
         } else {
-            // הורדת סיכויים ל-87+:
-            // 80% סיכוי לשחקן רגיל (מתחת ל-87), 20% סיכוי לשחקן מעל 87
-            let isHigh = Math.random() < 0.8; // רק 15% סיכוי לשחקן גבוה
+            let isHigh = Math.random() < 0.2; // 20% סיכוי ל-87+
             let pool = players.filter(p => isHigh ? p.rating >= 87 : p.rating < 87);
             if(pool.length === 0) pool = players;
             rolled = pool[Math.floor(Math.random()*pool.length)];
@@ -191,16 +185,47 @@
         save();
     }
 
+    // פונקציית מכירה לשוק
     function sellPlayer(sId) {
         const idx = userData.collection.findIndex(p => p.sId === sId);
         if(idx !== -1) {
             const p = userData.collection[idx];
-            let price = p.rating * 2; // מחיר מכירה בסיסי
-            userData.coins += price;
+            let price = p.rating * 5; // מחיר בשוק
+            
+            // הוספה לשוק הגלובלי
+            db.ref('market/' + sId).set({
+                ...p,
+                seller: myId,
+                marketPrice: price
+            });
+
             userData.collection.splice(idx, 1);
             save();
-            alert(`נמכר ב-${price} 💰`);
+            alert(`השחקן הועלה לשוק ב-${price} 💰`);
         }
+    }
+
+    function buyFromMarket(sId, price, seller) {
+        if(userData.coins < price) return alert("אין לך מספיק כסף!");
+        if(seller === myId) return alert("זה השחקן שלך!");
+
+        userData.coins -= price;
+        db.ref('market/' + sId).once('value', snap => {
+            let p = snap.val();
+            if(!p) return alert("השחקן כבר נמכר!");
+            
+            if(!userData.collection) userData.collection = [];
+            userData.collection.push(p);
+            
+            // מחיקה מהשוק
+            db.ref('market/' + sId).remove();
+            
+            // שליחת כסף למוכר
+            db.ref('users/' + seller + '/coins').transaction(c => (c || 0) + price);
+            
+            save();
+            alert("קנייה הצליחה!");
+        });
     }
 
     function setLineup(sId) {
@@ -228,19 +253,16 @@
         document.getElementById('vs-display').style.display = 'block';
         document.getElementById('match-live').style.display = 'none';
         
-        // חישוב OVR
         let myOvr = Math.round(userData.lineup.reduce((a,b)=>a+b.rating, 0) / userData.lineup.length);
-        let botOvr = Math.floor(Math.random() * 20) + 75; // בוט בין 75 ל-95
+        let botOvr = Math.floor(Math.random() * 15) + 80; 
         document.getElementById('my-ovr').innerText = myOvr;
         document.getElementById('bot-ovr').innerText = botOvr;
-        window.currentMatch = { myOvr, botOvr };
         save();
     }
 
     function runMatchLogic() {
         document.getElementById('vs-display').style.display = 'none';
         document.getElementById('match-live').style.display = 'block';
-        
         let score = [0,0], min = 0;
         const tl = document.getElementById('timeline');
         tl.innerHTML = "";
@@ -251,7 +273,6 @@
             let chance = hasKushi ? 0.35 : 0.1;
             if(Math.random() < chance) { score[0]++; tl.innerHTML += `<div>⚽ גול! (${min}')</div>`; }
             if(Math.random() < 0.08) { score[1]++; tl.innerHTML += `<div style="color:red">❌ ספגת (${min}')</div>`; }
-            
             document.getElementById('match-score').innerText = `${score[0]} - ${score[1]}`;
             if(min >= 90) {
                 clearInterval(inv);
@@ -259,10 +280,26 @@
                 document.getElementById('exit-btn').style.display = 'block';
                 save();
             }
-        }, 500);
+        }, 400);
     }
 
     function save() { db.ref('users/' + myId).set(userData); }
+
+    function renderMarket(marketData) {
+        const list = document.getElementById('market-list');
+        if(!marketData) { list.innerHTML = "השוק ריק כרגע..."; return; }
+        
+        list.innerHTML = Object.keys(marketData).map(key => {
+            const p = marketData[key];
+            return `
+                <div class="p-card ${p.name==='כושי'?'ultra':''}">
+                    <img src="${p.img}"><br><b>${p.name}</b><br><small>${p.rating}</small>
+                    <div style="color:var(--gold); font-weight:bold;">${p.marketPrice} 💰</div>
+                    <button class="btn btn-buy" onclick="buyFromMarket('${key}', ${p.marketPrice}, '${p.seller}')">קנה</button>
+                </div>
+            `;
+        }).join('');
+    }
 
     function render() {
         document.getElementById('coins-val').innerText = userData.coins;
@@ -286,7 +323,7 @@
             <div class="p-card ${p.name==='כושי'?'ultra':''}">
                 <img src="${p.img}"><br><b>${p.name}</b><br><small>${p.rating}</small>
                 <button class="btn btn-gold" onclick="setLineup('${p.sId}')">להרכב</button>
-                <button class="btn btn-sell" onclick="sellPlayer('${p.sId}')">מכור</button>
+                <button class="btn btn-sell" onclick="sellPlayer('${p.sId}')">למכור בשוק</button>
             </div>
         `).join('');
     }

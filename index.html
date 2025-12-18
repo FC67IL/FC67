@@ -2,16 +2,8 @@
 <html lang="he">
 <head>
 <meta charset="UTF-8">
-<title>FC67 Ultimate – Email Edition</title>
+<title>FC67 – LocalStorage Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rubik:wght@300;400;600&display=swap" rel="stylesheet">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
 body { margin:0; font-family:'Rubik',sans-serif; background:#020b16; color:#fff; overflow-x:hidden; }
@@ -31,14 +23,13 @@ header { display:flex; justify-content:space-between; align-items:center; backgr
 <body>
 
 <div id="login">
-  <input type="email" id="emailInput" placeholder="Email">
-  <input type="password" id="passInput" placeholder="Password">
-  <button id="emailLogin">התחבר / הירשם</button>
+  <input type="text" id="usernameInput" placeholder="שם משתמש">
+  <button id="loginBtn">התחבר / הירשם</button>
 </div>
 
 <div id="game">
 <header>
-  <h1>FC67 Ultimate</h1>
+  <h1>FC67 Local</h1>
   <div id="userInfo"></div>
   <div>Coins: <span id="coinVal">0</span> 🪙</div>
 </header>
@@ -48,23 +39,12 @@ header { display:flex; justify-content:space-between; align-items:center; backgr
 </div>
 
 <div class="market">
-  <h2>שוק העברות אונליין</h2>
+  <h2>שוק העברות</h2>
   <div id="marketList"></div>
 </div>
 </div>
 
 <script>
-/************** FIREBASE CONFIG **************/
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-
 /************** GAME STATE **************/
 const kickoffPositions = [
   {x:50,y:50}, // GK
@@ -82,55 +62,32 @@ const ORIG_PLAYERS = [
   {name:"פדרי", rat:88, pos:"MID", rare:true}, {name:"גבינה", rat:87, pos:"MID", rare:true}
 ];
 
-let state = { user: null, coins: 1000, club: [], lineup: [] };
+let state = { user:null, coins:1000, club:[], lineup:[] };
+let market = {}; // ניתן לשמור ב-localStorage אם רוצים
 
-/************** AUTH EMAIL **************/
-document.getElementById('emailLogin').onclick = () => {
-  const email = document.getElementById('emailInput').value.trim();
-  const pass = document.getElementById('passInput').value.trim();
-  if(!email || !pass) return alert("מלא את כל השדות");
+/************** LOGIN **************/
+document.getElementById('loginBtn').onclick = ()=>{
+  const u = document.getElementById('usernameInput').value.trim();
+  if(!u) return alert("מלא שם משתמש!");
+  state.user = u;
 
-  auth.signInWithEmailAndPassword(email, pass)
-    .then(userCred => {
-      console.log("נכנס בהצלחה:", userCred.user.email);
-    })
-    .catch(err => {
-      if(err.code === "auth/user-not-found"){
-        auth.createUserWithEmailAndPassword(email, pass)
-          .then(userCred => {
-            console.log("משתמש חדש נוצר:", userCred.user.email);
-          })
-          .catch(e => alert("שגיאה ביצירת משתמש: "+e.message));
-      } else {
-        alert("שגיאה בהתחברות: "+err.message);
-      }
-    });
-};
+  const saved = JSON.parse(localStorage.getItem('fc67_users') || '{}');
+  if(saved[u]) state = saved[u];
+  else {
+    state.coins = 1000;
+    state.club = [];
+    state.lineup = [];
+    saved[u] = state;
+    localStorage.setItem('fc67_users', JSON.stringify(saved));
+  }
 
-/************** ON AUTH CHANGE **************/
-auth.onAuthStateChanged(user => {
-  if(!user) return;
-  state.user = user;
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('game').style.display = 'block';
-  document.getElementById('userInfo').innerText = user.email;
-
-  // load user data or init
-  db.ref('users/'+user.uid).once('value').then(snap => {
-    if(snap.exists()){
-      const data = snap.val();
-      state.coins = data.coins || 1000;
-      state.club = data.club || [];
-      state.lineup = data.lineup || [];
-      render();
-    } else {
-      db.ref('users/'+user.uid).set({coins:1000, club:[], lineup:[]});
-    }
-  });
-
+  document.getElementById('login').style.display='none';
+  document.getElementById('game').style.display='block';
+  document.getElementById('userInfo').innerText=u;
+  render();
   initKickOff();
   loadMarket();
-});
+};
 
 /************** KICK OFF **************/
 function initKickOff(){
@@ -139,47 +96,54 @@ function initKickOff(){
   kickoffPositions.forEach((pos,i)=>{
     const p = document.createElement('div');
     p.className='player';
-    p.innerText = i+1;
+    p.innerText=i+1;
     p.style.left=`calc(${pos.x}% - 17px)`;
     p.style.top=`calc(${pos.y}% - 17px)`;
     pitch.appendChild(p);
   });
 }
 
-/************** ONLINE MARKET **************/
+/************** MARKET **************/
 function loadMarket(){
   const list = document.getElementById('marketList');
-  db.ref('market').on('value', snap=>{
-    list.innerHTML='';
-    snap.forEach(child=>{
-      const item = child.val();
-      const row = document.createElement('div');
-      row.className='market-item';
-      row.innerHTML=`<span>${item.name} (${item.price}💰)</span>`;
-      if(item.owner!==state.user.uid){
-        const btn = document.createElement('button');
-        btn.className='btn';
-        btn.innerText='קנה';
-        btn.onclick=()=>buyPlayer(child.key,item);
-        row.appendChild(btn);
-      }
-      list.appendChild(row);
-    });
-  });
+  list.innerHTML='';
+  for(const id in market){
+    const item = market[id];
+    const row = document.createElement('div');
+    row.className='market-item';
+    row.innerHTML=`<span>${item.name} (${item.price}💰)</span>`;
+    if(item.owner!==state.user){
+      const btn = document.createElement('button');
+      btn.className='btn';
+      btn.innerText='קנה';
+      btn.onclick=()=>buyPlayer(id);
+      row.appendChild(btn);
+    }
+    list.appendChild(row);
+  }
 }
 
-function buyPlayer(id,item){
+function buyPlayer(id){
+  const item = market[id];
   if(state.coins<item.price) return alert("אין מספיק Coins!");
   state.coins -= item.price;
   state.club.push({name:item.name, rat:item.rat});
-  db.ref('users/'+state.user.uid).update({coins:state.coins, club:state.club});
-  db.ref('market/'+id).remove();
+  delete market[id];
+  saveState();
   render();
+  loadMarket();
+}
+
+function saveState(){
+  const saved = JSON.parse(localStorage.getItem('fc67_users') || '{}');
+  saved[state.user] = state;
+  localStorage.setItem('fc67_users', JSON.stringify(saved));
 }
 
 function render(){
   document.getElementById('coinVal').innerText=state.coins;
 }
 </script>
+
 </body>
 </html>

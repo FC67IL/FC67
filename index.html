@@ -141,12 +141,12 @@
         {name:"יונתן_פדרי", pos:"MID", rating:88, img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
         {name:"רין", pos:"FWD", rating:82, img:"https://www.picshare.co.il/m_pictures/img153010.jpg"},
         {name:"שף", pos:"FWD", rating:78, img:"https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
-        {name:"איר", pos:"GK", rating:90, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
+        {name:"איר", pos:"GK", rating:91, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
         {name:"עילאי", pos:"DEF", rating:85, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
         {name:"קריסטל", pos:"MID", rating:89, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
         {name:"אור", pos:"FWD", rating:88, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
         {name:"יאיא", pos:"FWD", rating:86, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327661803831488/VRFS__2025-12-18_18-27-18.jpg?ex=6945c5b6&is=69447436&hm=7d74b821c4941f765db80ad8c1995eef2bb99784db86858d5c5932c4b3d986f0&=&format=webp"},
-        {name:"איירון ", pos:"MID", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
+        {name:"איירון ", pos:"DEF", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
         {name:"איתמר ", pos:"MID", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
         {name:"אקספרין  ", pos:"MID", rating:84, img:"https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"}, 
         {name:"כושי", pos:"FWD", rating:99, img:"https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"}, 
@@ -177,7 +177,7 @@
         } else {
             // הורדת סיכויים ל-87+:
             // 80% סיכוי לשחקן רגיל (מתחת ל-87), 20% סיכוי לשחקן מעל 87
-            let isHigh = Math.random() < 0.15; // רק 15% סיכוי לשחקן גבוה
+            let isHigh = Math.random() < 0.8; // רק 15% סיכוי לשחקן גבוה
             let pool = players.filter(p => isHigh ? p.rating >= 87 : p.rating < 87);
             if(pool.length === 0) pool = players;
             rolled = pool[Math.floor(Math.random()*pool.length)];

@@ -3,342 +3,326 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>FC67 ULTIMATE — PRO EDITION</title>
+    <title>FC67 ULTIMATE — NEW PACKS</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap');
         :root { --gold: #fbbf24; --bg: #0f172a; --card: #1e293b; --danger: #ef4444; --success: #22c55e; }
         * { box-sizing: border-box; font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: #fff; padding-bottom: 80px; overflow-x: hidden; }
 
-        /* UI Elements */
         .header { background: #1e293b; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 1100; }
-        .coin-badge { color: var(--gold); font-weight: 800; border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; font-size: 1.1rem; }
+        .coin-badge { color: var(--gold); font-weight: 800; border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; }
         .nav-bar { display: flex; background: #1e293b; border-bottom: 1px solid #334155; position: sticky; top: 62px; z-index: 1000; }
         .nav-bar button { flex: 1; padding: 15px; border: none; background: none; color: #94a3b8; font-weight: bold; cursor: pointer; }
         .nav-bar button.active { color: var(--gold); border-bottom: 4px solid var(--gold); }
         .tab { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
         .tab.active { display: block; }
 
-        /* Pitch & Cards */
-        .pitch { background: linear-gradient(to bottom, #14532d, #064e3b); border-radius: 20px; padding: 20px 10px; display: flex; flex-direction: column; justify-content: space-around; min-height: 480px; border: 2px solid #ffffff20; margin-bottom: 15px; box-shadow: inset 0 0 50px rgba(0,0,0,0.5); }
-        .pitch-row { display: flex; justify-content: center; gap: 10px; }
-        .slot { width: 70px; height: 95px; border: 1px dashed #ffffff40; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); font-size: 0.65rem; text-align: center; cursor: pointer; }
+        .pitch { background: linear-gradient(to bottom, #14532d, #064e3b); border-radius: 20px; padding: 15px 5px; display: flex; flex-direction: column; justify-content: space-around; min-height: 520px; border: 2px solid #ffffff20; margin-bottom: 15px; position: relative; }
+        .pitch-row { display: flex; justify-content: center; gap: 15px; z-index: 2; }
+        .slot { width: 75px; height: 95px; border: 1px dashed #ffffff40; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); font-size: 0.65rem; text-align: center; cursor: pointer; }
         .slot img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
-        
+        .slot.filled { border: 1px solid var(--gold); background: var(--card); }
+
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; }
-        .p-card { background: var(--card); border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #334155; transition: 0.3s; position: relative; }
-        .p-card.rare { border: 2px solid var(--gold); box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); background: linear-gradient(145deg, #1e293b, #2d3748); }
-        .p-card img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 5px; object-fit: cover; background: #000; }
-        
+        .p-card { background: var(--card); border-radius: 12px; padding: 8px; text-align: center; border: 1px solid #334155; position: relative; }
+        .p-card.rare { border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+        .p-card img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 5px; object-fit: cover; }
         .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 8px; margin-top: 5px; }
         .btn-gold { background: var(--gold); color: #000; }
-        .btn-kickoff { background: var(--success); color: white; height: 55px; margin: 15px 0; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
 
-        /* Pack Opening Animation */
-        #pack-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
-        .pack-container { position: relative; width: 200px; height: 280px; perspective: 1000px; }
-        .pack-card-visual { width: 100%; height: 100%; background: linear-gradient(135deg, #fbbf24, #d97706); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 5rem; box-shadow: 0 0 50px var(--gold); animation: shake 0.5s infinite; cursor: pointer; }
-        @keyframes shake { 0% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
-        .revealed-player { display: none; animation: zoomIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes zoomIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1.2); opacity: 1; } }
-
-        /* Kick Off Overlay */
-        #ko-overlay { position: fixed; inset: 0; background: #0b0f1a; z-index: 5000; display: none; flex-direction: column; padding: 20px; }
-        .timeline { flex: 1; background: #1e293b; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 15px 0; display: flex; flex-direction: column-reverse; gap: 8px; border: 1px solid #334155; }
-        .event { padding: 10px; border-bottom: 1px solid #ffffff10; font-size: 0.95rem; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        #pack-overlay, #ko-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
+        .pack-box { width: 180px; height: 250px; background: linear-gradient(135deg, var(--gold), #d97706); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 5rem; animation: shake 0.5s infinite; cursor: pointer; color: white; }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(4deg); } 75% { transform: rotate(-4deg); } }
+        .timeline { flex: 1; width: 100%; background: #1e293b; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 15px 0; display: flex; flex-direction: column-reverse; gap: 8px; }
         
-        .store-pack { background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #334155; margin-bottom: 15px; text-align: center; }
-        .store-pack.premium { border-color: var(--gold); background: linear-gradient(to bottom, #1e293b, #0f172a); }
+        .store-item { background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid #334155; margin-bottom: 15px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div style="font-weight:900; color:var(--gold); font-size: 1.4rem;">FC67 ULTIMATE</div>
-    <div class="coin-badge"><span id="coins-val">1000</span> 💰</div>
+    <div id="team-name-ui" style="font-weight:900; color:var(--gold);">FC67 LOADING...</div>
+    <div class="coin-badge"><span id="coins-val">0</span> 💰</div>
 </div>
 
 <div class="nav-bar">
-    <button id="btn-pitch" class="active" onclick="showTab('tab-pitch')">הקבוצה</button>
-    <button id="btn-market" onclick="showTab('tab-market')">השוק</button>
+    <button id="btn-pitch" class="active" onclick="showTab('tab-pitch')">הסגל</button>
+    <button id="btn-market" onclick="showTab('tab-market')">שוק</button>
     <button id="btn-store" onclick="showTab('tab-store')">חנות</button>
 </div>
 
 <div id="tab-pitch" class="tab active">
     <div class="pitch" id="pitch"></div>
-    <button class="btn btn-kickoff" onclick="tryStartMatch()">⚽ שחק KICK OFF (50 💰)</button>
-    <h3 style="border-right: 4px solid var(--gold); padding-right: 10px;">האוסף שלי <small id="coll-count" style="font-weight: normal; font-size: 0.8rem; color: #94a3b8;"></small></h3>
+    <button class="btn" style="background:var(--success); color:white; height:50px; font-size:1rem;" onclick="tryStartMatch()">⚽ שחק KICK OFF (50 💰)</button>
+    <h3>האוסף שלי</h3>
     <div id="my-collection" class="grid"></div>
 </div>
 
 <div id="tab-market" class="tab">
-    <h2 style="color:var(--gold)">שוק ההעברות</h2>
+    <h2 style="color:var(--gold)">שוק העברות אונליין</h2>
     <div id="market-list" class="grid"></div>
 </div>
 
 <div id="tab-store" class="tab">
-    <div class="store-pack">
-        <h3 style="margin:0">חבילה רגילה</h3>
-        <p style="font-size:0.8rem; color:#94a3b8;">15% סיכוי לשחקן נדיר (89+)</p>
-        <button class="btn btn-gold" onclick="tryOpenPack(250, 0.15)">250 💰</button>
+    <div class="store-item" style="border-color: #94a3b8;">
+        <h3>חבילת בסיס</h3>
+        <p>שחקן אקראי מכל הרשימה</p>
+        <button class="btn btn-gold" onclick="buyPack('regular')">250 💰</button>
     </div>
-    <div class="store-pack premium">
-        <h3 style="margin:0; color:var(--gold);">חבילת פרימיום ⭐</h3>
-        <p style="font-size:0.8rem; color:#94a3b8;">50% סיכוי לשחקן נדיר (89+)!!</p>
-        <button class="btn btn-gold" onclick="tryOpenPack(500, 0.50)">500 💰</button>
+    <div class="store-item" style="border-color: var(--gold); box-shadow: 0 0 10px #fbbf2450;">
+        <h3>חבילת Rare Pack</h3>
+        <p>רק שחקנים מעל 85 רייטינג!</p>
+        <button class="btn btn-gold" onclick="buyPack('rare')">600 💰</button>
+    </div>
+    <div class="store-item" style="border-color: #a855f7; background: linear-gradient(to bottom, #1e293b, #3b0764);">
+        <h3>חבילת כושי (99)</h3>
+        <p>סיכוי גבוה מאוד לכושי הנדיר!</p>
+        <button class="btn btn-gold" style="background:#a855f7; color:white;" onclick="buyPack('special')">1500 💰</button>
     </div>
 </div>
 
 <div id="pack-overlay">
-    <div class="pack-container" id="pack-anim-container">
-        <div class="pack-card-visual" onclick="revealPlayer()">❓</div>
-    </div>
-    <div id="player-reveal-area" style="text-align:center; display:none;">
-        <div id="revealed-card-content"></div>
-        <button class="btn btn-gold" style="width:220px; margin-top:80px; height: 50px; font-size: 1.1rem;" onclick="finishOpening()">אוסף שחקן וסגור</button>
+    <div id="pack-visual" class="pack-box" onclick="revealPlayer()">❓</div>
+    <div id="reveal-area" style="display:none; text-align:center;">
+        <div id="card-content"></div>
+        <button class="btn btn-gold" style="width:200px; margin-top:50px;" onclick="collectPlayer()">איסוף</button>
     </div>
 </div>
 
-<div id="ko-overlay">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div id="ko-timer" style="color:var(--danger); font-weight:bold; font-size:1.2rem; width: 60px;">00:00</div>
-        <div id="ko-score" style="font-size:3.5rem; font-weight:900; color:var(--gold); letter-spacing: 5px;">0 - 0</div>
-        <button onclick="closeMatch()" id="close-ko" style="background:none; border:none; color:#fff; font-size:2rem; visibility:hidden;">✕</button>
+<div id="ko-overlay" style="background:#0b0f1a;">
+    <div style="text-align:center;">
+        <div style="color:#94a3b8;"><span style="color:var(--success)">אני</span> VS <span id="opp-team-name" style="color:var(--danger)">BOT FC</span></div>
+        <div id="match-score" style="font-size:3.5rem; font-weight:900; color:var(--gold);">0 - 0</div>
     </div>
     <div class="timeline" id="timeline"></div>
-    <button id="finish-btn" class="btn btn-gold" style="display:none; height: 55px;" onclick="closeMatch()">סיים משחק וחזור</button>
+    <button id="exit-btn" class="btn btn-gold" style="display:none;" onclick="location.reload()">סיים משחק</button>
 </div>
 
 <script>
-    const allPlayers = [
-        {name:"הביגון", pos:"GK", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
-        {name:"דוד", pos:"DEF", rating:87, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=David"},
-        {name:"טוי", pos:"FWD", rating:87, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Toy"},
-        {name:"וויני", pos:"MID", rating:88, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Wini"},
-        {name:"מר", pos:"FWD", rating:91, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Mar"},
-        {name:"בובו", pos:"DEF", rating:77, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Bobo"},
+    const firebaseConfig = {
+        apiKey: "AIzaSyDAyQfRIPiJO2pENF4AF9LDWTjyLeOrQNY",
+        authDomain: "fc67-3de49.firebaseapp.com",
+        projectId: "fc67-3de49",
+        databaseURL: "https://fc67-3de49-default-rtdb.firebaseio.com/", 
+        storageBucket: "fc67-3de49.firebasestorage.app",
+        messagingSenderId: "484648478424",
+        appId: "1:484648478424:web:dfd4899b7477cc83f699ad"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let myId = localStorage.getItem('fc67_uid') || prompt("שם הקבוצה?", "קבוצה_" + Math.floor(Math.random()*99));
+    localStorage.setItem('fc67_uid', myId);
+    document.getElementById('team-name-ui').innerText = myId;
+
+    const allPlayersList = [
+        {name:"הביגון", pos:"GK", rating:91, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
+        {name:"דוד", pos:"DEF", rating:87, img:"https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960"},
+        {name:"טוי", pos:"FWD", rating:87, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
+        {name:"וויני", pos:"MID", rating:88, img:"https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
+        {name:"מר", pos:"FWD", rating:91, img:"https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
+        {name:"בובו", pos:"DEF", rating:77, img:"https://taoos.co.il/product/%D7%90%D7%99%D7%A9-%D7%A9%D7%9C%D7%92-%D7%9E%D7%97%D7%9C%D7%99%D7%A7-%D7%A2%D7%9C-%D7%A7%D7%A8%D7%97-%D7%9B%D7%95%D7%91%D7%A2-%D7%9B%D7%97%D7%95%D7%9C/"},
         {name:"מיכאל", pos:"MID", rating:77, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205100394516525/WhatsApp_Image_2025-12-18_at_12.56.32_1.jpeg?ex=69455392&is=69440212&hm=d2e80311a105a40ad9cdc648fb4c64a6babb3e39b7ae5f508ab46db1f242cf72&=&format=webp"},
-        {name:"שרק", pos:"FWD", rating:88, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
-        {name:"גבינה", pos:"MID", rating:87, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Gvina"},
-        {name:"טלקר", pos:"DEF", rating:80, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Talker"},
-        {name:"דרופיקס", pos:"FWD", rating:85, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Dropix"},
-        {name:"שבותה", pos:"MID", rating:86, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Shvuta"},
-        {name:"גולדי", pos:"MID", rating:84, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Goldi"},
-        {name:"בום", pos:"FWD", rating:89, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Boom"},
-        {name:"יונתן_פדרי", pos:"MID", rating:88, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Padri"},
-        {name:"רין", pos:"FWD", rating:82, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Rin"},
-        {name:"שף", pos:"FWD", rating:78, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Chef"},
-        {name:"איר", pos:"GK", rating:90, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Air"},
-        {name:"עילאי", pos:"DEF", rating:85, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Ilai"},
-        {name:"קריסטל", pos:"MID", rating:89, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Crystal"},
-        {name:"אור", pos:"FWD", rating:88, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Or"},
-        {name:"דמפלה", pos:"FWD", rating:91, img:"https://api.dicebear.com/7.x/avataaars/svg?seed=Dempele"}
+        {name:"שרק", pos:"FWD", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
+        {name:"גבינה", pos:"MID", rating:87, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336082552651776/VRFS__2025-12-18_18-35-31.jpg?ex=6945cd8e&is=69447c0e&hm=b23825cfe2af008d946eea0c607562b4fd0b6377b3f4167f731e617e30a1f67c&=&format=webp"},
+        {name:"טלקר", pos:"DEF", rating:80, img:"https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
+        {name:"דרופיקס", pos:"FWD", rating:85, img:"https://media.discordapp.net/attachments/1451328561226190929/1451335844064657531/2025-12-19_001025.png?ex=6945cd55&is=69447bd5&hm=857282b63386835b860c775eb4920a0258fade2497bc9e7924395d5071285da3&=&format=webp&quality=lossless"},
+        {name:"שבותה", pos:"MID", rating:86, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336624318320691/2025-12-19_001354.png?ex=6945ce0f&is=69447c8f&hm=627bec49930ba5e8d88d9b6e8974327936ba5e8ed3ccd6084dc4f5420f20fbe6&=&format=webp&quality=lossless"},
+        {name:"גולדי", pos:"MID", rating:84, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337038656966817/gold-1920w.webp?ex=6945ce72&is=69447cf2&hm=dfc3efac8e6073074fbe6f7a19c7badf1751e8acc33b55f77aa6e3e1ab38816d&=&format=webp"},
+        {name:"בום", pos:"FWD", rating:89, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
+        {name:"יונתן_פדרי", pos:"MID", rating:88, img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
+        {name:"רין", pos:"FWD", rating:82, img:"https://www.picshare.co.il/m_pictures/img153010.jpg"},
+        {name:"שף", pos:"FWD", rating:78, img:"https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
+        {name:"איר", pos:"GK", rating:90, img:"https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
+        {name:"עילאי", pos:"DEF", rating:85, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
+        {name:"קריסטל", pos:"MID", rating:89, img:"https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
+        {name:"אור", pos:"FWD", rating:88, img:"https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
+        {name:"יאיא", pos:"FWD", rating:86, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327661803831488/VRFS__2025-12-18_18-27-18.jpg?ex=6945c5b6&is=69447436&hm=7d74b821c4941f765db80ad8c1995eef2bb99784db86858d5c5932c4b3d986f0&=&format=webp"},
+        {name:"איירון ", pos:"MID", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
+        {name:"איתמר ", pos:"MID", rating:81, img:"https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
+        {name:"אקספרין  ", pos:"MID", rating:84, img:"https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"}, 
+        {name:"כושי", pos:"FWD", rating:99, img:"https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"}, 
     ];
 
-    let state = { coins: 1000, collection: [allPlayers[5], allPlayers[6]], lineup: [], market: [], pendingPlayer: null };
+    let userData = { coins: 1000, collection: [], lineup: [] };
+    let tempP = null;
+
+    db.ref('users/' + myId).on('value', snap => {
+        if(snap.val()) userData = snap.val();
+        else db.ref('users/' + myId).set(userData);
+        render();
+    });
+
+    db.ref('market').on('value', snap => {
+        const list = document.getElementById('market-list');
+        list.innerHTML = "";
+        const data = snap.val();
+        for(let key in data) {
+            const p = data[key];
+            if(p.seller !== myId) {
+                list.innerHTML += `<div class="p-card ${p.rating>=89?'rare':''}">
+                    <img src="${p.img}"><br><b>${p.name}</b><br>
+                    <b style="color:var(--gold)">${p.price} 💰</b><br>
+                    <button class="btn btn-gold" onclick="buyMarket('${key}', ${p.price})">קנה</button>
+                </div>`;
+            }
+        }
+    });
 
     function showTab(id) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + id.split('-')[1]).classList.add('active');
-        render();
     }
 
-    // --- Pack System ---
-    function tryOpenPack(cost, rareChance) {
-        const owned = [...state.collection, ...state.lineup, ...state.market].map(p => p.name);
-        const available = allPlayers.filter(p => !owned.includes(p.name));
-        if (available.length === 0) return alert("אספת את כל השחקנים הקיימים!");
-        if (state.coins < cost) return alert("אין לך מספיק מטבעות!");
-
-        state.coins -= cost;
-        let chosen;
-        const rare = available.filter(p => p.rating >= 89);
-        const normal = available.filter(p => p.rating < 89);
+    function buyPack(type) {
+        let price = type === 'regular' ? 250 : (type === 'rare' ? 600 : 1500);
+        if(userData.coins < price) return alert("אין כסף!");
         
-        if (rare.length > 0 && Math.random() < rareChance) chosen = rare[Math.floor(Math.random() * rare.length)];
-        else chosen = normal.length > 0 ? normal[Math.floor(Math.random() * normal.length)] : rare[0];
+        userData.coins -= price;
+        let pool = [...allPlayersList];
+        
+        if(type === 'rare') pool = allPlayersList.filter(p => p.rating >= 85);
+        if(type === 'special') {
+            // סיכוי של 40% לכושי, אחרת אקראי
+            if(Math.random() < 0.4) pool = allPlayersList.filter(p => p.name === "כושי");
+        }
 
-        state.pendingPlayer = chosen;
+        tempP = pool[Math.floor(Math.random()*pool.length)];
         document.getElementById('pack-overlay').style.display = 'flex';
-        document.getElementById('pack-anim-container').style.display = 'block';
-        document.getElementById('player-reveal-area').style.display = 'none';
-        render();
+        document.getElementById('pack-visual').style.display = 'flex';
+        document.getElementById('reveal-area').style.display = 'none';
+        save();
     }
 
     function revealPlayer() {
-        const p = state.pendingPlayer;
-        document.getElementById('pack-anim-container').style.display = 'none';
-        const revealArea = document.getElementById('player-reveal-area');
-        const content = document.getElementById('revealed-card-content');
-        
-        revealArea.style.display = 'block';
-        content.innerHTML = `
-            <div class="p-card ${p.rating >= 89 ? 'rare' : ''}" style="transform: scale(1.4); margin: 0 auto;">
-                <h2 style="color:var(--gold); margin:5px 0;">${p.rating >= 89 ? '✨ WALKOUT !! ✨' : 'NEW PLAYER'}</h2>
-                <img src="${p.img}" style="width:100px; height:100px;">
-                <div style="font-size:1.4rem; font-weight:800;">${p.name}</div>
-                <div style="color:var(--gold); font-weight:bold;">${p.pos} | ${p.rating}</div>
-            </div>
-        `;
-        content.className = "revealed-player";
-        content.style.display = "block";
+        document.getElementById('pack-visual').style.display = 'none';
+        document.getElementById('reveal-area').style.display = 'block';
+        document.getElementById('card-content').innerHTML = `<div class="p-card ${tempP.rating>=89?'rare':''}" style="transform:scale(1.4); margin:20px auto;"><img src="${tempP.img}"><br><b>${tempP.name}</b><br>${tempP.rating}</div>`;
     }
 
-    function finishOpening() {
-        state.collection.push({...state.pendingPlayer});
-        state.pendingPlayer = null;
+    function collectPlayer() {
+        if(!userData.collection) userData.collection = [];
+        userData.collection.push(tempP);
         document.getElementById('pack-overlay').style.display = 'none';
-        render();
+        save();
     }
 
-    // --- Kick Off System ---
-    function tryStartMatch() {
-        if (state.lineup.length === 0) return alert("עליך להציב שחקנים בהרכב קודם!");
-        if (state.coins < 50) return alert("חסרים לך 50 מטבעות לכניסה!");
-        state.coins -= 50;
-        startKickOff();
-    }
-
-    function startKickOff() {
+    async function tryStartMatch() {
+        if(!userData.lineup || userData.lineup.length === 0) return alert("שים שחקן בהרכב!");
+        userData.coins -= 50;
+        save();
         document.getElementById('ko-overlay').style.display = 'flex';
-        document.getElementById('close-ko').style.visibility = 'hidden';
-        document.getElementById('finish-btn').style.display = 'none';
-        const tl = document.getElementById('timeline');
-        tl.innerHTML = "<div class='event'><b>0'</b> שריקת הפתיחה! המשחק החל.</div>";
-        
+        const snap = await db.ref('users').once('value');
+        const users = Object.keys(snap.val() || {}).filter(u => u !== myId);
+        const opp = users.length > 0 ? users[Math.floor(Math.random()*users.length)] : "BOT FC";
+        document.getElementById('opp-team-name').innerText = opp;
+        runMatch();
+    }
+
+    function runMatch() {
         let score = [0, 0], min = 0;
-        document.getElementById('ko-score').innerText = "0 - 0";
-
-        const matchInterval = setInterval(() => {
-            min += 5;
-            document.getElementById('ko-timer').innerText = min + ":00";
-            
-            // Your goal chance
-            if (Math.random() < 0.12) {
-                score[0]++;
-                const scorer = state.lineup[Math.floor(Math.random() * state.lineup.length)];
-                tl.innerHTML += `<div class='event'><b>${min}'</b> ⚽ <b>גווווול!</b> ${scorer.name} כובש שער מדהים!</div>`;
-                document.getElementById('ko-score').innerText = `${score[0]} - ${score[1]}`;
+        const tl = document.getElementById('timeline');
+        tl.innerHTML = "<div>שריקת פתיחה!</div>";
+        const inv = setInterval(() => {
+            min += 10;
+            if(Math.random() < 0.1) { score[0]++; tl.innerHTML += `<div>⚽ שער לך! (${min}')</div>`; }
+            if(Math.random() < 0.08) { score[1]++; tl.innerHTML += `<div style="color:red">❌ שער ליריב (${min}')</div>`; }
+            document.getElementById('match-score').innerText = `${score[0]} - ${score[1]}`;
+            if(min >= 90) {
+                clearInterval(inv);
+                const win = score[0] > score[1] ? 150 : (score[0]===score[1]?60:0);
+                userData.coins += win;
+                tl.innerHTML += `<div style="background:var(--gold); color:black; font-weight:bold; text-align:center; padding:5px;">סיום! הרווחת ${win} 💰</div>`;
+                document.getElementById('exit-btn').style.display = 'block';
+                save();
             }
-            
-            // Opponent goal chance
-            if (Math.random() < 0.10) {
-                score[1]++;
-                tl.innerHTML += `<div class='event' style='color:#ff9999'><b>${min}'</b> ❌ שער ליריבה. ההגנה נרדמה.</div>`;
-                document.getElementById('ko-score').innerText = `${score[0]} - ${score[1]}`;
-            }
-
-            if (min >= 90) {
-                clearInterval(matchInterval);
-                let prize = 0;
-                let msg = "";
-                if (score[0] > score[1]) { prize = 200; msg = "🏁 ניצחון! הרווחת 200 💰"; }
-                else if (score[0] === score[1]) { prize = 75; msg = "🏁 תיקו. קיבלת 75 💰"; }
-                else { msg = "🏁 הפסדת. אולי בפעם הבאה..."; }
-                
-                state.coins += prize;
-                tl.innerHTML += `<div class='event' style='background:var(--gold); color:#000; font-weight:bold; margin-top:10px;'>${msg}</div>`;
-                document.getElementById('finish-btn').style.display = 'block';
-                document.getElementById('close-ko').style.visibility = 'visible';
-                render();
-            }
-        }, 350);
+        }, 400);
     }
 
-    function closeMatch() {
-        document.getElementById('ko-overlay').style.display = 'none';
-        render();
-    }
-
-    // --- Market & Management ---
-    function listForSale(idx) {
-        const p = state.collection[idx];
-        const pr = prompt(`בכמה תרצה למכור את ${p.name}?`, "500");
-        if(pr && !isNaN(pr)) {
-            state.market.push({...p, mPrice: parseInt(pr), mId: Date.now()});
-            state.collection.splice(idx, 1);
-            render();
-        }
-    }
-
-    function buyFromMarket(mId) {
-        const idx = state.market.findIndex(m => m.mId === mId);
-        if (state.coins < state.market[idx].mPrice) return alert("אין לך מספיק כסף!");
-        state.coins -= state.market[idx].mPrice;
-        state.collection.push({...state.market[idx]});
-        state.market.splice(idx, 1);
-        render();
-    }
-
-    function addToLineup(idx) {
-        const p = state.collection[idx];
-        const formation = { FWD: 3, MID: 3, DEF: 4, GK: 1 };
-        const slots = []; for (let i = 0; i < formation[p.pos]; i++) slots.push(p.pos + i);
-        const free = slots.find(sId => !state.lineup.find(lp => lp.slot === sId));
-        if (!free) return alert(`עמדת ה-${p.pos} מלאה!`);
+    function setLineup(idx) {
+        const p = userData.collection[idx];
+        const limits = { FWD: 1, MID: 2, DEF: 2, GK: 1 };
+        const count = (userData.lineup || []).filter(lp => lp.pos === p.pos).length;
+        if(count >= limits[p.pos]) return alert("אין מקום בעמדה זו!");
         
-        const player = state.collection.splice(idx, 1)[0];
-        player.slot = free;
-        state.lineup.push(player);
-        render();
+        const player = userData.collection.splice(idx, 1)[0];
+        if(!userData.lineup) userData.lineup = [];
+        player.sId = p.pos + "_" + Date.now();
+        userData.lineup.push(player);
+        save();
     }
 
     function removeFromLineup(sId) {
-        const idx = state.lineup.findIndex(l => l.slot === sId);
-        if(idx === -1) return;
-        const p = state.lineup.splice(idx, 1)[0];
-        delete p.slot;
-        state.collection.push(p);
-        render();
+        const idx = userData.lineup.findIndex(p => p.sId === sId);
+        const p = userData.lineup.splice(idx, 1)[0];
+        delete p.sId;
+        userData.collection.push(p);
+        save();
     }
+
+    function sellMarket(idx) {
+        const pr = prompt("מחיר מכירה?", "500");
+        if(pr) {
+            db.ref('market').push({...userData.collection[idx], seller: myId, price: parseInt(pr)});
+            userData.collection.splice(idx, 1);
+            save();
+        }
+    }
+
+    function buyMarket(key, price) {
+        if(userData.coins < price) return alert("אין כסף!");
+        db.ref('market/' + key).once('value', s => {
+            userData.coins -= price;
+            if(!userData.collection) userData.collection = [];
+            userData.collection.push(s.val());
+            db.ref('market/' + key).remove();
+            save();
+        });
+    }
+
+    function save() { db.ref('users/' + myId).set(userData); }
 
     function render() {
-        document.getElementById('coins-val').innerText = state.coins.toLocaleString();
-        document.getElementById('coll-count').innerText = `(${state.collection.length} שחקנים)`;
+        document.getElementById('coins-val').innerText = userData.coins;
+        const pitch = document.getElementById('pitch');
+        pitch.innerHTML = "";
         
-        // Pitch Render
-        const pitch = document.getElementById('pitch'); pitch.innerHTML = "";
-        const layout = [{p:'FWD', c:3}, {p:'MID', c:3}, {p:'DEF', c:4}, {p:'GK', c:1}];
-        layout.forEach(row => {
-            const div = document.createElement('div'); div.className = "pitch-row";
-            for(let i=0; i<row.c; i++) {
-                const sId = row.p + i;
-                const p = state.lineup.find(l => l.slot === sId);
-                div.innerHTML += `
-                    <div class="slot" onclick="if(this.dataset.active==='true') removeFromLineup('${sId}')" data-active="${!!p}">
-                        ${p ? `<img src="${p.img}"><br><b>${p.name}</b>` : `<span style="opacity:0.5">${row.p}</span>`}
-                    </div>`;
+        // הגדרת המערך החדש שלך: 1 GK, 2 DEF, 2 MID, 1 FWD
+        const rows = [
+            {pos: 'FWD', count: 1},
+            {pos: 'MID', count: 2},
+            {pos: 'DEF', count: 2},
+            {pos: 'GK', count: 1}
+        ];
+        
+        rows.forEach(r => {
+            const d = document.createElement('div'); d.className = "pitch-row";
+            const inLineup = (userData.lineup || []).filter(p => p.pos === r.pos);
+            for(let i=0; i<r.count; i++) {
+                const p = inLineup[i];
+                d.innerHTML += `<div class="slot ${p?'filled':''}" onclick="${p?`removeFromLineup('${p.sId}')`:''}">
+                    ${p ? `<img src="${p.img}"><br>${p.name}` : r.pos}
+                </div>`;
             }
-            pitch.appendChild(div);
+            pitch.appendChild(d);
         });
 
-        // Collection Render
-        document.getElementById('my-collection').innerHTML = state.collection.map((p, i) => `
-            <div class="p-card ${p.rating >= 89 ? 'rare' : ''}">
-                <div onclick="addToLineup(${i})" style="cursor:pointer">
-                    <div style="font-size:0.7rem; color:var(--gold);">${p.pos} | ${p.rating}</div>
-                    <img src="${p.img}">
-                    <div style="font-weight:bold; font-size:0.9rem;">${p.name}</div>
-                </div>
-                <button class="btn" style="background:var(--danger); color:white; font-size:10px;" onclick="listForSale(${i})">מכור בשוק</button>
-            </div>`).join('');
-
-        // Market Render
-        document.getElementById('market-list').innerHTML = state.market.length === 0 ? 
-            `<p style="text-align:center; grid-column: 1/-1; opacity:0.5;">אין שחקנים בשוק כרגע...</p>` :
-            state.market.map(m => `
-            <div class="p-card ${m.rating >= 89 ? 'rare' : ''}">
-                <img src="${m.img}">
-                <div style="font-weight:bold;">${m.name}</div>
-                <b style="color:var(--gold)">${m.mPrice} 💰</b>
-                <button class="btn btn-gold" onclick="buyFromMarket(${m.mId})">קנה</button>
-            </div>`).join('');
+        const coll = document.getElementById('my-collection');
+        coll.innerHTML = (userData.collection || []).map((p, i) => `
+            <div class="p-card ${p.rating>=89?'rare':''}">
+                <img src="${p.img}"><br><b>${p.name}</b><br><small>${p.pos} | ${p.rating}</small>
+                <button class="btn btn-gold" onclick="setLineup(${i})">להרכב</button>
+                <button class="btn" style="color:red" onclick="sellMarket(${i})">שוק</button>
+            </div>
+        `).join('');
     }
-
-    render();
 </script>
 </body>
 </html>

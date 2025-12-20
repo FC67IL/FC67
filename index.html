@@ -3,159 +3,326 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>FC67 ULTIMATE — FIXED VERSION</title>
+    <title>FC67 ULTIMATE CHAMPIONS</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap');
-        :root { --gold: #fbbf24; --bg: #0f172a; --card: #1e293b; --danger: #ef4444; --success: #22c55e; }
-        * { box-sizing: border-box; font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: #fff; padding-bottom: 90px; overflow-x: hidden; }
-
-        .header { background: #1e293b; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 1100; }
-        .coin-badge { color: var(--gold); font-weight: 800; border: 1px solid var(--gold); padding: 5px 15px; border-radius: 20px; background: rgba(251, 191, 36, 0.1); }
         
-        .nav-bar { display: flex; background: #1e293b; border-bottom: 1px solid #334155; position: sticky; top: 62px; z-index: 1000; }
-        .nav-bar button { flex: 1; padding: 15px; border: none; background: none; color: #94a3b8; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-        .nav-bar button.active { color: var(--gold); border-bottom: 4px solid var(--gold); background: rgba(255,255,255,0.05); }
-        
-        .tab { display: none; padding: 15px; max-width: 800px; margin: 0 auto; }
-        .tab.active { display: block; animation: fadeIn 0.3s; }
-
-        /* PITCH */
-        .pitch { background: linear-gradient(to bottom, #14532d, #064e3b); border-radius: 20px; padding: 20px 5px; display: flex; flex-direction: column; justify-content: space-between; min-height: 500px; border: 4px solid #ffffff20; margin-bottom: 15px; position: relative; box-shadow: inset 0 0 50px rgba(0,0,0,0.5); }
-        .pitch::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.2); }
-        .pitch-row { display: flex; justify-content: center; gap: 15px; z-index: 2; }
-        
-        .slot { width: 70px; height: 95px; border: 2px dashed #ffffff40; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); font-size: 0.7rem; text-align: center; cursor: pointer; position: relative; transition: 0.2s; }
-        .slot:active { transform: scale(0.95); }
-        .slot img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; background: #000; }
-        .slot.filled { border: 2px solid var(--gold); background: var(--card); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .slot-rating { position: absolute; top: -8px; right: -8px; background: var(--gold); color: black; font-weight: 900; font-size: 0.8rem; padding: 2px 6px; border-radius: 10px; border: 1px solid #fff; }
-        .slot-pos { font-weight: bold; color: #cbd5e1; margin-top: 2px; }
-
-        /* CARDS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
-        .p-card { background: var(--card); border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #334155; position: relative; transition: 0.2s; display:flex; flex-direction:column; justify-content:space-between; }
-        .p-card.rare { border: 2px solid var(--gold); box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); background: linear-gradient(135deg, #1e293b, #2d3e52); }
-        .p-card img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 5px; object-fit: cover; background:#0f172a; }
-        
-        .btn { border: none; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; padding: 10px; margin-top: 5px; font-size: 0.85rem; transition:0.2s; }
-        .btn:active { transform:scale(0.95); }
-        .btn-gold { background: var(--gold); color: #000; }
-        .btn-red { background: #dc2626; color: white; }
-        .btn-blue { background: #2563eb; color: white; }
-        .btn-group { display:flex; gap:5px; width:100%; margin-top:5px; }
-
-        /* OVERLAYS */
-        #pack-overlay, #ko-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
-        .timeline { flex: 1; width: 100%; background: #1e293b; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 15px 0; display: flex; flex-direction: column-reverse; gap: 8px; border: 1px solid #334155; }
-        
-        .bench-row { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
-        
-        @keyframes shake {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(5deg); }
-            50% { transform: rotate(0deg); }
-            75% { transform: rotate(-5deg); }
-            100% { transform: rotate(0deg); }
+        :root {
+            --gold: #fcd34d;
+            --gold-dark: #b45309;
+            --bg: #020617;
+            --card: rgba(30, 41, 59, 0.7);
+            --accent: #38bdf8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --xp: #a855f7;
+            --glass: rgba(255, 255, 255, 0.05);
         }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        * { box-sizing: border-box; font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            background-image: radial-gradient(circle at top right, #1e1b4b, transparent), radial-gradient(circle at bottom left, #0f172a, transparent);
+            color: #f1f5f9; 
+            padding-bottom: 100px; 
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .header { 
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky; top: 0; z-index: 2000;
+        }
+
+        .user-info { display: flex; flex-direction: column; }
+        .team-name { font-weight: 800; font-size: 1.2rem; color: var(--gold); text-shadow: 0 0 10px rgba(252, 211, 77, 0.3); }
+        
+        .stats-pills { display: flex; gap: 8px; margin-top: 5px; }
+        .pill { 
+            background: var(--glass); 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 0.8rem; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Navigation */
+        .nav-bar { 
+            display: flex; 
+            background: rgba(15, 23, 42, 0.9);
+            padding: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky; top: 72px; z-index: 1000;
+        }
+        .nav-bar button { 
+            flex: 1; padding: 12px; border: none; background: none; 
+            color: #94a3b8; font-weight: 700; cursor: pointer; border-radius: 10px;
+            transition: all 0.3s; font-size: 0.9rem;
+        }
+        .nav-bar button.active { 
+            color: #fff; background: var(--glass); box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .tab { display: none; padding: 20px; max-width: 900px; margin: 0 auto; animation: slideUp 0.4s ease-out; }
+        .tab.active { display: block; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Soccer Pitch Visual */
+        .pitch-container {
+            background: #064e3b;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 10%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.03) 20%);
+            border-radius: 24px;
+            padding: 25px 10px;
+            position: relative;
+            border: 3px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
+        }
+
+        .pitch-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .pitch-row:last-child { margin-bottom: 0; }
+
+        /* Card Visuals */
+        .slot {
+            width: 80px; height: 110px;
+            background: rgba(0,0,0,0.4);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.3s; position: relative;
+        }
+        
+        .card-pro {
+            width: 80px; height: 110px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; padding-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .card-pro.elite {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, #451a03, #78350f, #451a03);
+            animation: cardGlow 2s infinite;
+        }
+
+        @keyframes cardGlow { 0%, 100% { box-shadow: 0 0 5px var(--gold-dark); } 50% { box-shadow: 0 0 20px var(--gold); } }
+
+        .card-pro img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); background: #000; }
+        .card-pro .rating { 
+            position: absolute; top: -5px; right: -5px; 
+            background: var(--gold); color: #000; font-weight: 900; 
+            padding: 2px 6px; border-radius: 8px; font-size: 0.8rem;
+        }
+        .card-pro .name { font-size: 0.65rem; font-weight: 800; margin-top: 5px; text-align: center; width: 90%; overflow: hidden; white-space: nowrap; }
+
+        /* Market & Inventory Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        
+        .inv-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            transition: 0.3s;
+        }
+        .inv-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+        .btn {
+            border: none; border-radius: 12px; padding: 12px; font-weight: 800;
+            cursor: pointer; transition: 0.2s; width: 100%; font-size: 0.85rem;
+            margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-gold { background: var(--gold); color: #000; }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+
+        /* Match Overlay */
+        #match-overlay {
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98);
+            z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .scoreboard { 
+            display: flex; align-items: center; gap: 30px; margin-bottom: 40px;
+            background: var(--glass); padding: 30px; border-radius: 30px; border: 1px solid var(--glass);
+        }
+        .score-num { font-size: 5rem; font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; }
+        .vs { font-size: 1.5rem; color: #64748b; font-weight: 800; }
+
+        .match-log {
+            width: 100%; max-width: 500px; height: 250px; background: #000;
+            border-radius: 20px; padding: 20px; overflow-y: auto; border: 1px solid #1e293b;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        /* Leaderboard */
+        .lb-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: var(--glass); border-radius: 12px; margin-bottom: 8px;
+        }
+        .lb-rank { width: 30px; font-weight: 900; color: var(--accent); }
+
+        /* Pack Animation */
+        #pack-open {
+            position: fixed; inset: 0; background: #000; z-index: 6000;
+            display: none; align-items: center; justify-content: center;
+        }
+        .pack-container { width: 200px; cursor: pointer; transition: 0.5s; }
+        .pack-container:hover { transform: scale(1.1) rotate(5deg); }
+        .shaking { animation: shake 0.2s infinite; }
+        @keyframes shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } }
+
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div id="team-name-ui" style="font-weight:900; color:var(--gold); font-size:1.2rem; letter-spacing:1px;">FC67</div>
-    <div class="coin-badge"><span id="coins-val">0</span> 💰</div>
+    <div class="user-info">
+        <div class="team-name" id="display-team-name">FC67 TEAM</div>
+        <div class="stats-pills">
+            <div class="pill xp-badge">LVL <span id="val-lvl">1</span></div>
+            <div class="pill" style="color: #22c55e;">⚡ <span id="val-energy">10</span>/10</div>
+        </div>
+    </div>
+    <div class="pill coin-badge" style="font-size: 1.1rem; padding: 8px 15px;">
+        <span id="val-coins">0</span> 💰
+    </div>
 </div>
 
 <div class="nav-bar">
-    <button id="btn-pitch" class="active" onclick="showTab('tab-pitch')">סגל</button>
-    <button id="btn-store" onclick="showTab('tab-store')">חנות</button>
-    <button id="btn-market" onclick="showTab('tab-market')">שוק</button>
-    <button id="btn-chat" onclick="showTab('tab-chat')">צ'אט</button>
+    <button id="btn-club" class="active" onclick="openTab('club')">🏠 מועדון</button>
+    <button id="btn-store" onclick="openTab('store')">🛒 חנות</button>
+    <button id="btn-market" onclick="openTab('market')">⚖️ שוק</button>
+    <button id="btn-social" onclick="openTab('social')">🏆 מובילים</button>
 </div>
 
-<div id="tab-pitch" class="tab active">
-    <div class="pitch" id="pitch"></div>
-    
-    <div style="background:#1e293b; padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid #334155;">
-        <small style="color:var(--gold); font-weight:bold;">ספסל המחליפים</small>
-        <div class="bench-row" id="bench-display"></div>
+<div id="tab-club" class="tab active">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin:0;">הרכב פעיל</h3>
+        <div class="pill" style="border-color: var(--success); color: var(--success);">
+            כימיה: <span id="val-chem">0</span>%
+        </div>
     </div>
 
-    <button class="btn" style="background:var(--success); color:white; height:55px; font-size:1.1rem; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);" onclick="startMatchmaking()">
-        ⚽ שחק אונליין (50 💰)
+    <div class="pitch-container" id="pitch-ui">
+        </div>
+
+    <div style="background: var(--glass); padding: 15px; border-radius: 20px; margin-bottom: 25px;">
+        <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">ספסל מחליפים</div>
+        <div id="bench-ui" style="display:flex; gap:12px; overflow-x: auto; padding-bottom: 5px;"></div>
+    </div>
+
+    <button class="btn btn-gold" style="height: 60px; font-size: 1.2rem; box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);" onclick="startLeagueMatch()">
+        🎮 שחק משחק ליגה (⚡ 2)
     </button>
-    
-    <h3 style="margin-top:25px; border-bottom:1px solid #334155; padding-bottom:10px;">המועדון שלי</h3>
-    <div id="my-collection" class="grid"></div>
+
+    <h3 style="margin-top: 40px; border-bottom: 2px solid var(--glass); padding-bottom: 10px;">האוסף שלי</h3>
+    <div id="collection-grid" class="grid"></div>
 </div>
 
 <div id="tab-store" class="tab">
-    <div style="display:grid; gap:15px;">
-        <div style="background:var(--card); padding:20px; border-radius:15px; text-align:center; border:1px solid #94a3b8;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="font-size: 2rem; color: var(--gold);">חנות החבילות</h2>
+        <p style="color: #94a3b8;">נסה את מזלך והשג שחקני עלית!</p>
+    </div>
+    
+    <div class="grid">
+        <div class="inv-card" style="border-top: 5px solid #64748b;">
+            <div style="font-size: 3rem;">📦</div>
             <h3>Base Pack</h3>
-            <p style="color:#94a3b8; font-size:0.9rem;">סיכוי לשחקנים רגילים</p>
+            <p>שחקנים בדרגת 75-85</p>
             <button class="btn btn-gold" onclick="buyPack('regular')">250 💰</button>
         </div>
-        <div style="background:var(--card); padding:20px; border-radius:15px; text-align:center; border:2px solid var(--gold);">
-            <h3 style="color:var(--gold);">Rare Pack (82+)</h3>
-            <p style="color:#94a3b8; font-size:0.9rem;">מובטח שחקן רייר</p>
-            <button class="btn btn-gold" onclick="buyPack('rare')">600 💰</button>
+        <div class="inv-card" style="border-top: 5px solid var(--gold); background: linear-gradient(to bottom, rgba(251, 191, 36, 0.1), var(--card));">
+            <div style="font-size: 3rem;">🌟</div>
+            <h3>Premium Pack</h3>
+            <p>שחקנים בדרגת 84-99</p>
+            <button class="btn btn-gold" onclick="buyPack('premium')">800 💰</button>
         </div>
-        <div style="background:linear-gradient(45deg, #3b0764, #1e293b); padding:20px; border-radius:15px; text-align:center; border:2px solid #a855f7;">
-            <h3 style="color:#a855f7;">Kushi Pack (1% Chance)</h3>
-            <p style="color:#d8b4fe; font-size:0.9rem;">החבילה היקרה ביותר</p>
-            <button class="btn" style="background:#a855f7; color:white;" onclick="buyPack('special')">1500 💰</button>
-        </div>
+    </div>
+
+    <div style="margin-top: 30px; background: var(--glass); padding: 20px; border-radius: 20px;">
+        <h4>🎁 בונוסים</h4>
+        <button id="daily-bonus-btn" class="btn btn-primary" onclick="claimDaily()">קבל בונוס יומי (200 💰)</button>
     </div>
 </div>
 
 <div id="tab-market" class="tab">
-    <h2 style="color:var(--gold); text-align:center;">שוק ההעברות</h2>
-    <div id="market-list" class="grid"></div>
-    <div id="empty-market" style="display:none; text-align:center; color:#94a3b8; margin-top:20px;">השוק ריק כרגע...</div>
+    <h2 style="text-align: center;">שוק ההעברות 🌍</h2>
+    <div id="market-grid" class="grid"></div>
 </div>
 
-<div id="tab-chat" class="tab">
-    <div id="chat-window" style="height:350px; overflow-y:auto; background:#000; padding:10px; border-radius:10px; font-size: 0.9rem; border:1px solid #334155;"></div>
-    <div style="display:flex; gap:10px; margin-top:10px;">
-        <input type="text" id="chat-input" placeholder="הודעה..." style="flex:1; padding:10px; border-radius:8px; border:none; background:#334155; color:white;">
-        <button class="btn btn-gold" style="width:70px; margin:0;" onclick="sendChat()">שלח</button>
+<div id="tab-social" class="tab">
+    <h3>🏆 טבלת המנצחים</h3>
+    <div id="leaderboard-list"></div>
+    
+    <h3 style="margin-top: 30px;">💬 צ'אט גלובלי</h3>
+    <div id="chat-box" style="height: 200px; background: #000; border-radius: 15px; padding: 15px; overflow-y: auto; font-size: 0.9rem; margin-bottom: 10px; border: 1px solid var(--glass);"></div>
+    <div style="display:flex; gap:10px;">
+        <input type="text" id="chat-input" placeholder="הודעה..." style="flex:1; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; color: #fff;">
+        <button class="btn btn-primary" style="width: 80px; margin:0;" onclick="sendChatMessage()">שלח</button>
     </div>
 </div>
 
-<div id="pack-overlay">
-    <h2 style="color:white; margin-bottom:50px;">לחץ לפתיחה</h2>
-    <div id="pack-visual" style="font-size:100px; animation: shake 0.5s infinite; cursor:pointer;" onclick="revealPlayer()">🎁</div>
-    <div id="reveal-area" style="display:none; text-align:center; width:100%;">
-        <div id="card-content" style="display:flex; justify-content:center;"></div>
-        <button class="btn btn-gold" style="width:200px; margin-top:30px;" onclick="collectPlayer()">הוסף למועדון</button>
+<div id="match-overlay">
+    <div id="match-title" style="color: var(--accent); font-weight: 800; margin-bottom: 10px;">MATCH IN PROGRESS</div>
+    <div class="scoreboard">
+        <div class="team">
+            <div id="m-home-name" style="font-weight: 800; text-align: center;">YOU</div>
+            <div class="score-num" id="m-home-score">0</div>
+        </div>
+        <div class="vs">VS</div>
+        <div class="team">
+            <div id="m-away-name" style="font-weight: 800; text-align: center;">BOT</div>
+            <div class="score-num" id="m-away-score">0</div>
+        </div>
     </div>
+    <div class="match-log" id="match-log"></div>
+    <button id="btn-match-exit" class="btn btn-gold" style="display:none; width: 200px; margin-top: 20px;" onclick="closeMatch()">סיים וחזור</button>
 </div>
 
-<div id="ko-overlay">
-    <h2 id="match-status">מחפש יריב...</h2>
-    <h1 id="match-score" style="font-size:4rem; color:var(--gold); margin:10px 0;">0 - 0</h1>
-    <div id="subs-ui" style="display:none; width:100%;">
-        <p style="font-size:0.8rem; color:var(--gold); text-align:center;">לחץ לביצוע חילוף (מעלה סיכוי לגול):</p>
-        <div class="bench-row" id="match-bench-options" style="justify-content:center;"></div>
+<div id="pack-open" onclick="triggerReveal()">
+    <div id="pack-obj" class="pack-container" style="text-align:center;">
+        <div id="pack-img" style="font-size: 120px;">🧧</div>
+        <h2 id="pack-hint">לחץ לפתיחה!</h2>
     </div>
-    <div class="timeline" id="timeline"></div>
-    <button id="exit-btn" class="btn btn-gold" style="display:none; width:150px;" onclick="closeMatch()">סגור וחזור</button>
+    <div id="pack-result" style="display:none; text-align:center;">
+        <div id="opened-card-container"></div>
+        <button class="btn btn-gold" style="width: 200px; margin-top: 40px;" onclick="confirmPack()">הוסף למועדון</button>
+    </div>
 </div>
 
 <script>
-    // Firebase Configuration
+    // --- DATABASE CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyDAyQfRIPiJO2pENF4AF9LDWTjyLeOrQNY",
         authDomain: "fc67-3de49.firebaseapp.com",
+        databaseURL: "https://fc67-3de49-default-rtdb.firebaseio.com/",
         projectId: "fc67-3de49",
-        databaseURL: "https://fc67-3de49-default-rtdb.firebaseio.com/", 
         storageBucket: "fc67-3de49.firebasestorage.app",
         messagingSenderId: "484648478424",
         appId: "1:484648478424:web:dfd4899b7477cc83f699ad"
@@ -163,449 +330,389 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // User Setup
-    let myId = localStorage.getItem('fc67_uid');
-    if(!myId) {
-        myId = prompt("הכנס שם קבוצה (אנגלית/עברית):");
-        if(!myId) myId = "Guest" + Math.floor(Math.random()*999);
-        localStorage.setItem('fc67_uid', myId);
-    }
-    document.getElementById('team-name-ui').innerText = myId;
+    // --- GAME STATE ---
+    let myId = localStorage.getItem('fc67_uid') || "Guest_" + Math.floor(Math.random()*9999);
+    localStorage.setItem('fc67_uid', myId);
+    
+    let user = {
+        coins: 1000,
+        energy: 10,
+        xp: 0,
+        lvl: 1,
+        lastDaily: 0,
+        collection: [],
+        lineup: [],
+        bench: [],
+        ovr: 0
+    };
 
-    let userData = { coins: 1000, collection: [], lineup: [], bench: [] };
-    let tempP = null;
-    let subUsedInMatch = false;
+    let packTemp = null;
+    let isOpening = false;
 
-    // --- MAIN LISTENERS ---
+    // --- INITIALIZATION ---
     db.ref('users/' + myId).on('value', snap => {
-        const val = snap.val();
-        if(val) {
-            userData = {
-                coins: val.coins || 0,
-                collection: val.collection || [],
-                lineup: val.lineup || [],
-                bench: val.bench || []
-            };
+        if(snap.val()) {
+            user = snap.val();
+            if(!user.collection) user.collection = [];
+            if(!user.lineup) user.lineup = [];
+            if(!user.bench) user.bench = [];
+            updateStatsUI();
         } else {
-            // New user init
             save();
         }
-        render();
+        renderClub();
+        renderCollection();
     });
 
-    // --- MARKET LISTENER ---
-    db.ref('market').on('value', snap => {
-        const list = document.getElementById('market-list');
-        const emptyMsg = document.getElementById('empty-market');
-        list.innerHTML = "";
-        const data = snap.val();
-        let count = 0;
-        
-        if(data) {
-            for(let key in data) {
-                const p = data[key];
-                // Don't show my own players
-                if(p.seller !== myId) {
-                    count++;
-                    list.innerHTML += `
-                    <div class="p-card ${p.rating>88?'rare':''}">
-                        <img src="${p.img}">
-                        <b>${p.name}</b>
-                        <small>${p.pos} | ${p.rating}</small>
-                        <span style="color:var(--gold); font-size:1.1rem; font-weight:bold;">${p.price} 💰</span>
-                        <button class="btn btn-gold" onclick="buyMarket('${key}', ${p.price})">קנה</button>
-                    </div>`;
-                }
-            }
-        }
-        emptyMsg.style.display = count === 0 ? 'block' : 'none';
-    });
-
-    // --- CHAT LISTENER ---
-    db.ref('chat').limitToLast(20).on('child_added', snap => {
-        const val = snap.val();
-        const win = document.getElementById('chat-window');
-        const div = document.createElement('div');
-        div.style.marginBottom = "5px";
-        div.innerHTML = `<span style="color:var(--gold); font-weight:bold;">${val.name}:</span> <span style="color:#e2e8f0;">${val.msg}</span>`;
-        win.appendChild(div);
-        win.scrollTop = win.scrollHeight;
-    });
-
-    // --- FUNCTIONS ---
-
-    function save() { 
-        db.ref('users/' + myId).set(userData); 
+    // --- CORE FUNCTIONS ---
+    function save() {
+        user.ovr = calculateOVR();
+        db.ref('users/' + myId).set(user);
+        db.ref('leaderboard/' + myId).set({ name: myId, ovr: user.ovr, lvl: user.lvl });
     }
 
-    function showTab(id) {
+    function calculateOVR() {
+        if(user.lineup.length === 0) return 0;
+        let sum = user.lineup.reduce((a, b) => a + b.rating, 0);
+        return Math.round(sum / 6);
+    }
+
+    function updateStatsUI() {
+        document.getElementById('display-team-name').innerText = myId;
+        document.getElementById('val-coins').innerText = user.coins.toLocaleString();
+        document.getElementById('val-lvl').innerText = user.lvl;
+        document.getElementById('val-energy').innerText = user.energy;
+        
+        const now = Date.now();
+        const btn = document.getElementById('daily-bonus-btn');
+        if(now - (user.lastDaily || 0) > 86400000) {
+            btn.disabled = false; btn.innerText = "קבל בונוס יומי (200 💰)";
+        } else {
+            btn.disabled = true; btn.innerText = "בונוס יתאפס מחר";
+        }
+    }
+
+    // --- TAB SYSTEM ---
+    function openTab(name) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn-'+id.split('-')[1]).classList.add('active');
-    }
-
-    // --- MARKET LOGIC ---
-    function buyMarket(key, price) {
-        if(userData.coins < price) return alert("אין לך מספיק מטבעות!");
+        document.getElementById('tab-' + name).classList.add('active');
+        document.getElementById('btn-' + name).classList.add('active');
         
-        db.ref('market/' + key).transaction((currentData) => {
-            if (currentData === null) return null; // Already bought
-            if (currentData.seller === myId) return; // Cannot buy own (safety)
-            return null; // Remove from market
-        }, (error, committed, snapshot) => {
-            if (committed) {
-                const boughtPlayer = snapshot.val();
-                if(boughtPlayer) {
-                    userData.coins -= price;
-                    // Clean player object before adding
-                    delete boughtPlayer.seller;
-                    delete boughtPlayer.price;
-                    boughtPlayer.sId = "s_" + Date.now(); // New ID
-                    
-                    userData.collection.push(boughtPlayer);
-                    save();
-                    
-                    // Pay the seller
-                    db.ref('users/' + boughtPlayer.seller + '/coins').transaction(c => (c||0) + price);
-                    alert(`קנית את ${boughtPlayer.name} בהצלחה!`);
-                }
-            } else {
-                alert("השחקן כבר נמכר או הוסר.");
-            }
-        });
+        if(name === 'social') loadSocial();
+        if(name === 'market') loadMarket();
     }
 
-    function sellMarket(idx) {
-        const priceStr = prompt("בכמה למכור? (מספר בלבד)", "500");
-        if(!priceStr) return;
-        const price = parseInt(priceStr);
-        
-        if(price && !isNaN(price) && price > 0) {
-            const p = userData.collection.splice(idx, 1)[0];
-            // Add seller tag
-            const marketItem = {...p, seller: myId, price: price};
-            db.ref('market').push(marketItem);
-            save();
-            alert("השחקן עלה לשוק!");
-        } else {
-            alert("מחיר לא תקין");
-        }
-    }
-
-    function getQuickSellPrice(rating) {
-        return Math.max(10, Math.floor((rating * 5) - 300));
-    }
-
-    function quickSell(idx) {
-        const p = userData.collection[idx];
-        const price = getQuickSellPrice(p.rating);
-        if(confirm(`למכור את ${p.name} ב-${price} מטבעות?`)) {
-            userData.coins += price;
-            userData.collection.splice(idx, 1);
-            save();
-        }
-    }
-
-    // --- PACK LOGIC ---
-    function buyPack(type) {
-        let cost = type === 'regular' ? 250 : (type === 'rare' ? 600 : 1500);
-        if(userData.coins < cost) return alert("חסר כסף!");
-        
-        userData.coins -= cost;
-        const playersPool = [
-        {name: "כושי", pos: "FWD", rating: 99, img: "https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"},
-        {name: "הביגון", pos: "GK", rating: 91, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
-        {name: "מר", pos: "FWD", rating: 91, img: "https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
-        {name: "איר", pos: "GK", rating: 90, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
-        {name: "שרק", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
-        {name: "בום", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
-        {name: "קריסטל", pos: "MID", rating: 89, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
-        {name: "וויני", pos: "MID", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
-        {name: "יונתן_פדרי", pos: "MID", rating: 88, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
-        {name: "אור", pos: "FWD", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
-        {name: "דוד", pos: "DEF", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960"},
-        {name: "טוי", pos: "FWD", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
-        {name: "גבינה", pos: "MID", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336082552651776/VRFS__2025-12-18_18-35-31.jpg?ex=6945cd8e&is=69447c0e&hm=b23825cfe2af008d946eea0c607562b4fd0b6377b3f4167f731e617e30a1f67c&=&format=webp"},
-        {name: "שבותה", pos: "MID", rating: 86, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336624318320691/2025-12-19_001354.png?ex=6945ce0f&is=69447c8f&hm=627bec49930ba5e8d88d9b6e8974327936ba5e8ed3ccd6084dc4f5420f20fbe6&=&format=webp&quality=lossless"},
-        {name: "יאיא", pos: "FWD", rating: 86, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327661803831488/VRFS__2025-12-18_18-27-18.jpg?ex=6945c5b6&is=69447436&hm=7d74b821c4941f765db80ad8c1995eef2bb99784db86858d5c5932c4b3d986f0&=&format=webp"},
-        {name: "דרופיקס", pos: "FWD", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335844064657531/2025-12-19_001025.png?ex=6945cd55&is=69447bd5&hm=857282b63386835b860c775eb4920a0258fade2497bc9e7924395d5071285da3&=&format=webp&quality=lossless"},
-        {name: "עילאי", pos: "DEF", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
-        {name: "גולדי", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337038656966817/gold-1920w.webp?ex=6945ce72&is=69447cf2&hm=dfc3efac8e6073074fbe6f7a19c7badf1751e8acc33b55f77aa6e3e1ab38816d&=&format=webp"},
-        {name: "אקספרין", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"},
-        {name: "רין", pos: "FWD", rating: 82, img: "https://www.picshare.co.il/m_pictures/img153010.jpg"},
-        {name: "איירון", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
-        {name: "איתמר", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
-        {name: "טלקר", pos: "DEF", rating: 80, img: "https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
-        {name: "שף", pos: "FWD", rating: 78, img: "https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
-        {name: "בובו", pos: "DEF", rating: 77, img: "https://taoos.co.il/product/%D7%90%D7%99%D7%A9-%D7%A9%D7%9C%D7%92-%D7%9E%D7%97%D7%9C%D7%99%D7%A7-%D7%A2%D7%9C-%D7%A7%D7%A8%D7%97-%D7%9B%D7%95%D7%91%D7%A2-%D7%9B%D7%97%D7%95%D7%9C/"},
-        {name: "מיכאל", pos: "MID", rating: 77, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205100394516525/WhatsApp_Image_2025-12-18_at_12.56.32_1.jpeg?ex=69474dd2&is=6945fc52&hm=950e9b5aaa0b8ff0a29d1746c121a99251fcc8252a04433996c27579dbc56401&=&format=webp&width=497&height=744/"},
-        ];
-
-        let filtered = playersPool;
-        if (type === 'special') {
-             // 1% chance for special, else random rare
-             tempP = Math.random() < 0.05 ? playersPool[10] : playersPool[Math.floor(Math.random() * (playersPool.length-1))];
-        } else {
-            filtered = playersPool.filter(p => type === 'rare' ? p.rating >= 88 : p.rating < 99);
-            tempP = filtered[Math.floor(Math.random() * filtered.length)];
-        }
-        
-        // Slightly randomize rating to create variety
-        if(tempP.rating < 99) {
-            let variance = Math.floor(Math.random() * 3) - 1; 
-            tempP = {...tempP, rating: tempP.rating + variance};
-        }
-
-        document.getElementById('pack-overlay').style.display = 'flex';
-        document.getElementById('pack-visual').style.display = 'block';
-        document.getElementById('reveal-area').style.display = 'none';
-        save();
-    }
-
-    function revealPlayer() {
-        document.getElementById('pack-visual').style.display = 'none';
-        document.getElementById('reveal-area').style.display = 'block';
-        document.getElementById('card-content').innerHTML = `
-            <div class="p-card rare" style="transform:scale(1.5); margin:20px;">
-                <img src="${tempP.img}">
-                <b>${tempP.name}</b>
-                <div style="font-size:0.8rem">${tempP.pos}</div>
-                <div style="font-size:1.2rem; font-weight:bold; color:var(--gold)">${tempP.rating}</div>
-            </div>`;
-    }
-
-    function collectPlayer() {
-        tempP.sId = "s_" + Date.now();
-        userData.collection.push(tempP);
-        document.getElementById('pack-overlay').style.display = 'none';
-        save();
-    }
-
-    // --- GAME LOGIC ---
-    function startMatchmaking() {
-        // Validation
-        const gk = userData.lineup.find(x => x.pos === 'GK');
-        if(!gk) return alert("חובה שיהיה שוער בהרכב!");
-        if(userData.lineup.length < 6) return alert("ההרכב לא מלא! צריך 6 שחקנים.");
-        if(userData.coins < 50) return alert("צריך 50 מטבעות למשחק");
-        
-        userData.coins -= 50;
-        save();
-        
-        document.getElementById('ko-overlay').style.display = 'flex';
-        document.getElementById('timeline').innerHTML = "";
-        document.getElementById('exit-btn').style.display = 'none';
-        document.getElementById('match-status').innerText = "מחפש יריב...";
-        subUsedInMatch = false;
-
-        const matchBench = document.getElementById('match-bench-options');
-        matchBench.innerHTML = userData.bench.map((p, i) => `
-            <div class="slot filled" onclick="useSub(${i})">
-                <div class="slot-rating">${p.rating}</div>
-                <img src="${p.img}"><br>${p.name}
-            </div>
-        `).join('');
-        document.getElementById('subs-ui').style.display = 'block';
-
-        setTimeout(() => runMatch(), 1500);
-    }
-
-    function useSub(idx) {
-        if(subUsedInMatch) return alert("כבר ביצעת חילוף!");
-        const p = userData.bench[idx];
-        subUsedInMatch = true;
-        document.getElementById('timeline').innerHTML += `<div style="color:var(--success); font-weight:bold;">🔄 חילוף: ${p.name} נכנס למגרש!</div>`;
-        // Hide bench to show used
-        document.getElementById('subs-ui').style.opacity = '0.5';
-    }
-
-    function runMatch() {
-        const opponents = ["Real Madrid", "Barca Kids", "Man City Bot", "Hapoel Holon"];
-        const oppName = opponents[Math.floor(Math.random() * opponents.length)];
-        document.getElementById('match-status').innerText = "משחק נגד " + oppName;
-        
-        let score = [0, 0], min = 0;
-        let teamRating = userData.lineup.reduce((a,b)=>a+b.rating,0) / 6;
-        
-        const loop = setInterval(() => {
-            min += 5;
-            
-            // Calc probability based on rating + sub
-            let attackChance = (teamRating / 200) + (subUsedInMatch ? 0.05 : 0); 
-            
-            // Logic for goals
-            if(Math.random() < attackChance) { 
-                score[0]++; 
-                document.getElementById('timeline').innerHTML += `<div>⚽ <b>גול!</b> דקה ${min}' (${score[0]}-${score[1]})</div>`; 
-            }
-            
-            if(Math.random() < 0.12) { 
-                score[1]++; 
-                document.getElementById('timeline').innerHTML += `<div style="color:var(--danger)">🔻 ספגת גול... דקה ${min}'</div>`; 
-            }
-            
-            document.getElementById('match-score').innerText = `${score[0]} - ${score[1]}`;
-            
-            if(min >= 90) {
-                clearInterval(loop);
-                let isWin = score[0] > score[1];
-                let isDraw = score[0] === score[1];
-                let reward = isWin ? 200 : (isDraw ? 80 : 25);
-                
-                let msg = isWin ? "ניצחון אדיר!" : (isDraw ? "תיקו מכובד" : "הפסד...");
-                document.getElementById('match-status').innerText = msg;
-                document.getElementById('timeline').innerHTML += `<div style="color:var(--gold); font-size:1.2rem; text-align:center; margin-top:10px;">סיימת את המשחק!<br>קיבלת ${reward} 💰</div>`;
-                
-                userData.coins += reward;
-                document.getElementById('exit-btn').style.display = 'block';
-                document.getElementById('subs-ui').style.display = 'none';
-                save();
-            }
-            
-            // Scroll to bottom
-            const tm = document.getElementById('timeline');
-            tm.scrollTop = tm.scrollHeight;
-
-        }, 400); // Faster game
-    }
-
-    function closeMatch() {
-        document.getElementById('ko-overlay').style.display = 'none';
-    }
-
-    // --- RENDER ---
-    function render() {
-        document.getElementById('coins-val').innerText = userData.coins;
-        
-        // Pitch Render
-        const pitch = document.getElementById('pitch');
+    // --- CLUB RENDERING ---
+    function renderClub() {
+        const pitch = document.getElementById('pitch-ui');
         pitch.innerHTML = "";
         
-        // Formation: 1-2-2-1
-        const formationMap = [
-            { pos: 'FWD', max: 1 },
-            { pos: 'MID', max: 2 },
-            { pos: 'DEF', max: 2 },
-            { pos: 'GK', max: 1 }
+        const formation = [
+            { pos: 'FWD', count: 1 },
+            { pos: 'MID', count: 2 },
+            { pos: 'DEF', count: 2 },
+            { pos: 'GK', count: 1 }
         ];
-        
-        formationMap.forEach(row => {
-            const div = document.createElement('div'); 
-            div.className = "pitch-row";
+
+        formation.forEach(row => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = "pitch-row";
+            const players = user.lineup.filter(p => p.pos === row.pos);
             
-            // Filter players actually in lineup for this pos
-            const playersInPos = userData.lineup.filter(x => x.pos === row.pos);
-            
-            for(let i=0; i < row.max; i++) {
-                const p = playersInPos[i] || null;
-                div.innerHTML += `
-                <div class="slot ${p?'filled':''}" onclick="${p?`removeFromLineup('${p.sId}')`:''}">
-                    ${p ? 
-                        `<div class="slot-rating">${p.rating}</div><img src="${p.img}"><div class="slot-pos" style="color:white; font-size:0.6rem;">${p.name}</div>` : 
-                        `<div class="slot-pos">${row.pos}</div>`
-                    }
-                </div>`;
+            for(let i=0; i<row.count; i++) {
+                const p = players[i];
+                rowDiv.innerHTML += p ? `
+                    <div class="card-pro ${p.rating >= 90 ? 'elite' : ''}" onclick="removeFromLineup('${p.uId}')">
+                        <div class="rating">${p.rating}</div>
+                        <img src="${p.img}">
+                        <div class="name">${p.name}</div>
+                    </div>
+                ` : `<div class="slot">${row.pos}</div>`;
             }
-            pitch.appendChild(div);
+            pitch.appendChild(rowDiv);
         });
 
-        // Bench Render
-        document.getElementById('bench-display').innerHTML = userData.bench.map(p => `
-            <div class="slot filled" onclick="removeFromBench('${p.sId}')">
-                <div class="slot-rating">${p.rating}</div>
+        // Bench
+        const benchUI = document.getElementById('bench-ui');
+        benchUI.innerHTML = user.bench.map(p => `
+            <div class="card-pro" onclick="removeFromBench('${p.uId}')">
+                <div class="rating">${p.rating}</div>
                 <img src="${p.img}">
-                <div style="font-size:0.6rem; margin-top:2px;">${p.name}</div>
+                <div class="name">${p.name}</div>
             </div>
         `).join('');
 
-        // Collection Render
-        document.getElementById('my-collection').innerHTML = userData.collection.map((p, i) => `
-            <div class="p-card ${p.rating>88?'rare':''}">
-                <div>
-                    <img src="${p.img}">
-                    <div style="font-weight:bold; line-height:1.1;">${p.name}</div>
-                    <div style="color:#94a3b8; font-size:0.75rem;">${p.pos} | ${p.rating}</div>
+        document.getElementById('val-chem').innerText = (user.lineup.length * 16);
+    }
+
+    function renderCollection() {
+        const grid = document.getElementById('collection-grid');
+        grid.innerHTML = user.collection.map((p, i) => `
+            <div class="inv-card">
+                <div style="position:relative; width:60px; margin:0 auto;">
+                    <img src="${p.img}" style="width:60px; height:60px; border-radius:50%; border:2px solid var(--gold);">
+                    <div style="position:absolute; bottom:0; right:0; background:var(--gold); color:000; font-size:0.7rem; font-weight:900; padding:2px 5px; border-radius:5px;">${p.rating}</div>
                 </div>
-                <div>
-                    <div class="btn-group">
-                        <button class="btn btn-gold" onclick="addToLineup(${i})">הרכב</button>
-                        <button class="btn btn-blue" onclick="addToBench(${i})">ספסל</button>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-red" onclick="sellMarket(${i})">מכירה</button>
-                        <button class="btn" style="background:#334155; color:#fff;" onclick="quickSell(${i})">מחק</button>
-                    </div>
+                <div style="font-weight:800; margin-top:10px;">${p.name}</div>
+                <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:10px;">${p.pos}</div>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn btn-primary" style="padding:5px;" onclick="moveToLineup(${i})">הרכב</button>
+                    <button class="btn btn-outline" style="padding:5px;" onclick="moveToBench(${i})">ספסל</button>
                 </div>
+                <button class="btn btn-danger" style="padding:5px;" onclick="listOnMarket(${i})">מכור בשוק</button>
+                <button class="btn btn-gold" style="padding:5px;" onclick="trainPlayer(${i})">🆙 שפר (50💰)</button>
             </div>
         `).join('');
     }
 
-    // --- ADD/REMOVE LOGIC ---
-    function addToLineup(idx) {
-        const p = userData.collection[idx];
+    // --- GAMEPLAY LOGIC ---
+    function moveToLineup(idx) {
+        const p = user.collection[idx];
+        const limits = { FWD: 1, MID: 2, DEF: 2, GK: 1 };
+        const currentCount = user.lineup.filter(x => x.pos === p.pos).length;
         
-        // 1. Check Limits
-        const limits = { 'GK': 1, 'DEF': 2, 'MID': 2, 'FWD': 1 };
-        const currentInPos = userData.lineup.filter(x => x.pos === p.pos).length;
+        if(currentCount >= limits[p.pos]) return alert("אין מקום בעמדה הזו!");
         
-        if(currentInPos >= limits[p.pos]) {
-            return alert(`אין מקום! ההרכב כבר מכיל ${limits[p.pos]} שחקנים בעמדת ${p.pos}`);
-        }
-
-        // 2. Move
-        const playerToMove = userData.collection.splice(idx, 1)[0];
-        // Ensure sId
-        if(!playerToMove.sId) playerToMove.sId = "s_" + Date.now();
-        
-        userData.lineup.push(playerToMove);
+        const item = user.collection.splice(idx, 1)[0];
+        user.lineup.push(item);
         save();
-        render(); // Force update
     }
 
-    function addToBench(idx) {
-        if(userData.bench.length >= 7) return alert("הספסל מלא!");
-        const playerToMove = userData.collection.splice(idx, 1)[0];
-        
-        if(!playerToMove.sId) playerToMove.sId = "s_" + Date.now();
-
-        userData.bench.push(playerToMove);
+    function removeFromLineup(uId) {
+        const idx = user.lineup.findIndex(p => p.uId === uId);
+        const item = user.lineup.splice(idx, 1)[0];
+        user.collection.push(item);
         save();
-        render();
     }
 
-    function removeFromLineup(sId) {
-        const idx = userData.lineup.findIndex(p => p.sId === sId);
-        if(idx > -1) {
-            const p = userData.lineup.splice(idx, 1)[0];
-            userData.collection.push(p);
-            save();
-            render();
-        }
+    function moveToBench(idx) {
+        if(user.bench.length >= 5) return alert("ספסל מלא!");
+        user.bench.push(user.collection.splice(idx, 1)[0]);
+        save();
     }
 
-    function removeFromBench(sId) {
-        const idx = userData.bench.findIndex(p => p.sId === sId);
-        if(idx > -1) {
-            const p = userData.bench.splice(idx, 1)[0];
-            userData.collection.push(p);
-            save();
-            render();
-        }
+    function removeFromBench(uId) {
+        const idx = user.bench.findIndex(p => p.uId === uId);
+        const item = user.bench.splice(idx, 1)[0];
+        user.collection.push(item);
+        save();
     }
 
-    function sendChat() {
-        const inp = document.getElementById('chat-input');
-        const msg = inp.value;
-        if(!msg.trim()) return;
+    function trainPlayer(idx) {
+        if(user.coins < 50) return alert("אין מספיק כסף לאימון!");
+        if(user.collection[idx].rating >= 99) return alert("השחקן כבר ברמה מקסימלית!");
+        
+        user.coins -= 50;
+        user.collection[idx].rating += 1;
+        save();
+    }
 
-        db.ref('chat').push({
-            name: myId,
-            msg: msg,
-            time: Date.now()
+    // --- PACK OPENING SYSTEM ---
+    const playersPool = [
+        { name: "כושי אולטימייט", rating: 99, pos: "FWD", img: "https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless" },
+        { name: "ביגון הקיר", rating: 92, pos: "GK", img: "https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c305ea058d1047&=&format=webp" },
+        { name: "שרק הטורף", rating: 88, pos: "FWD", img: "https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp" },
+        { name: "דוד הבלם", rating: 85, pos: "DEF", img: "https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960" },
+        { name: "איתמר המהנדס", rating: 83, pos: "MID", img: "https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp" }
+    ];
+
+    function buyPack(type) {
+        const cost = type === 'premium' ? 800 : 250;
+        if(user.coins < cost) return alert("חסר מטבעות!");
+        
+        user.coins -= cost;
+        save();
+        
+        let pool = type === 'premium' ? playersPool.filter(p => p.rating > 85) : playersPool;
+        if(pool.length === 0) pool = playersPool; // Fallback
+        
+        packTemp = {...pool[Math.floor(Math.random()*pool.length)], uId: "p_" + Date.now()};
+        
+        document.getElementById('pack-open').style.display = 'flex';
+        document.getElementById('pack-result').style.display = 'none';
+        document.getElementById('pack-obj').style.display = 'block';
+        isOpening = true;
+    }
+
+    function triggerReveal() {
+        if(!isOpening) return;
+        const packObj = document.getElementById('pack-obj');
+        packObj.classList.add('shaking');
+        
+        setTimeout(() => {
+            packObj.classList.remove('shaking');
+            packObj.style.display = 'none';
+            document.getElementById('pack-result').style.display = 'block';
+            document.getElementById('opened-card-container').innerHTML = `
+                <div class="card-pro elite" style="transform:scale(2.5); margin: 0 auto;">
+                    <div class="rating">${packTemp.rating}</div>
+                    <img src="${packTemp.img}">
+                    <div class="name">${packTemp.name}</div>
+                </div>
+            `;
+            isOpening = false;
+        }, 1200);
+    }
+
+    function confirmPack() {
+        user.collection.push(packTemp);
+        user.xp += 25;
+        document.getElementById('pack-open').style.display = 'none';
+        save();
+    }
+
+    // --- MATCH SYSTEM ---
+    function startLeagueMatch() {
+        if(user.lineup.length < 6) return alert("צריך 6 שחקנים בהרכב כדי לשחק!");
+        if(user.energy < 2) return alert("אין מספיק אנרגיה! המתן להתחדשות.");
+        
+        user.energy -= 2;
+        save();
+        
+        document.getElementById('match-overlay').style.display = 'flex';
+        document.getElementById('m-home-score').innerText = "0";
+        document.getElementById('m-away-score').innerText = "0";
+        document.getElementById('match-log').innerHTML = "<div>⏳ שריקת הפתיחה...</div>";
+        document.getElementById('btn-match-exit').style.display = 'none';
+
+        let score = [0, 0];
+        let minute = 0;
+        const myPower = calculateOVR();
+        const botPower = Math.floor(Math.random() * 20) + 75; // Bot between 75-95
+
+        const gameLoop = setInterval(() => {
+            minute += 10;
+            
+            // Logic for goals
+            if(Math.random() * myPower > 45) {
+                if(Math.random() > 0.8) {
+                    score[0]++;
+                    document.getElementById('m-home-score').innerText = score[0];
+                    document.getElementById('match-log').innerHTML += `<div style="color:var(--gold)">⚽ גול! דקה ${minute}</div>`;
+                }
+            }
+            if(Math.random() * botPower > 50) {
+                if(Math.random() > 0.85) {
+                    score[1]++;
+                    document.getElementById('m-away-score').innerText = score[1];
+                    document.getElementById('match-log').innerHTML += `<div style="color:var(--danger)">🔻 ספגת גול... דקה ${minute}</div>`;
+                }
+            }
+
+            document.getElementById('match-log').scrollTop = document.getElementById('match-log').scrollHeight;
+
+            if(minute >= 90) {
+                clearInterval(gameLoop);
+                let reward = score[0] > score[1] ? 300 : (score[0] === score[1] ? 100 : 40);
+                let xp = score[0] > score[1] ? 50 : 20;
+                user.coins += reward;
+                user.xp += xp;
+                document.getElementById('match-log').innerHTML += `<div style="text-align:center; margin-top:10px; font-weight:bold;">הסתיים! בונוס: ${reward} 💰</div>`;
+                document.getElementById('btn-match-exit').style.display = 'block';
+                save();
+            }
+        }, 500);
+    }
+
+    function closeMatch() { document.getElementById('match-overlay').style.display = 'none'; }
+
+    // --- MARKET ---
+    function listOnMarket(idx) {
+        const price = prompt("בכמה למכור?");
+        if(!price || isNaN(price)) return;
+        const p = user.collection.splice(idx, 1)[0];
+        db.ref('market').push({ ...p, seller: myId, price: parseInt(price) });
+        save();
+    }
+
+    function loadMarket() {
+        db.ref('market').once('value', snap => {
+            const grid = document.getElementById('market-grid');
+            grid.innerHTML = "";
+            const data = snap.val();
+            if(data) {
+                for(let key in data) {
+                    const p = data[key];
+                    if(p.seller !== myId) {
+                        grid.innerHTML += `
+                            <div class="inv-card">
+                                <img src="${p.img}" style="width:50px; border-radius:50%;">
+                                <h4>${p.name}</h4>
+                                <div style="color:var(--gold)">${p.price} 💰</div>
+                                <button class="btn btn-gold" onclick="buyFromMarket('${key}', ${p.price})">קנה</button>
+                            </div>`;
+                    }
+                }
+            }
         });
-        inp.value = "";
     }
+
+    function buyFromMarket(key, price) {
+        if(user.coins < price) return alert("אין כסף!");
+        db.ref('market/' + key).once('value', snap => {
+            const p = snap.val();
+            user.coins -= price;
+            const newItem = {...p, uId: "p_" + Date.now()};
+            delete newItem.seller; delete newItem.price;
+            user.collection.push(newItem);
+            db.ref('market/' + key).remove();
+            db.ref('users/' + p.seller + '/coins').transaction(c => (c||0) + price);
+            save();
+            alert("השחקן הגיע למועדון!");
+            loadMarket();
+        });
+    }
+
+    // --- SOCIAL & LEADERBOARD ---
+    function loadSocial() {
+        db.ref('leaderboard').orderByChild('ovr').limitToLast(10).once('value', snap => {
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = "";
+            let ranks = [];
+            snap.forEach(child => { ranks.push(child.val()); });
+            ranks.reverse().forEach((u, i) => {
+                list.innerHTML += `
+                    <div class="lb-item">
+                        <div style="display:flex; align-items:center;">
+                            <span class="lb-rank">${i+1}</span>
+                            <span>${u.name}</span>
+                        </div>
+                        <div style="font-weight:900;">${u.ovr} OVR</div>
+                    </div>`;
+            });
+        });
+    }
+
+    function sendChatMessage() {
+        const msg = document.getElementById('chat-input').value;
+        if(!msg) return;
+        db.ref('chat').push({ name: myId, msg: msg });
+        document.getElementById('chat-input').value = "";
+    }
+
+    db.ref('chat').limitToLast(15).on('child_added', snap => {
+        const c = snap.val();
+        const box = document.getElementById('chat-box');
+        box.innerHTML += `<div><b style="color:var(--accent)">${c.name}:</b> ${c.msg}</div>`;
+        box.scrollTop = box.scrollHeight;
+    });
+
+    function claimDaily() {
+        user.coins += 200;
+        user.lastDaily = Date.now();
+        save();
+        updateStatsUI();
+    }
+
+    // Energy regeneration every 5 minutes
+    setInterval(() => {
+        if(user.energy < 10) {
+            user.energy++;
+            save();
+        }
+    }, 300000);
+
 </script>
 </body>
 </html>

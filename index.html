@@ -193,7 +193,7 @@
         render();
     });
 
-    // --- MARKET FIX ---
+    // --- MARKET LISTENER ---
     db.ref('market').on('value', snap => {
         const list = document.getElementById('market-list');
         const emptyMsg = document.getElementById('empty-market');
@@ -204,7 +204,7 @@
         if(data) {
             for(let key in data) {
                 const p = data[key];
-                // FIX: Don't show my own players
+                // Don't show my own players
                 if(p.seller !== myId) {
                     count++;
                     list.innerHTML += `
@@ -221,6 +221,17 @@
         emptyMsg.style.display = count === 0 ? 'block' : 'none';
     });
 
+    // --- CHAT LISTENER ---
+    db.ref('chat').limitToLast(20).on('child_added', snap => {
+        const val = snap.val();
+        const win = document.getElementById('chat-window');
+        const div = document.createElement('div');
+        div.style.marginBottom = "5px";
+        div.innerHTML = `<span style="color:var(--gold); font-weight:bold;">${val.name}:</span> <span style="color:#e2e8f0;">${val.msg}</span>`;
+        win.appendChild(div);
+        win.scrollTop = win.scrollHeight;
+    });
+
     // --- FUNCTIONS ---
 
     function save() { 
@@ -234,7 +245,7 @@
         document.getElementById('btn-'+id.split('-')[1]).classList.add('active');
     }
 
-    // --- MARKET LOGIC FIXED ---
+    // --- MARKET LOGIC ---
     function buyMarket(key, price) {
         if(userData.coins < price) return alert("אין לך מספיק מטבעות!");
         
@@ -463,7 +474,7 @@
         document.getElementById('ko-overlay').style.display = 'none';
     }
 
-    // --- RENDER & LINEUP FIX ---
+    // --- RENDER ---
     function render() {
         document.getElementById('coins-val').innerText = userData.coins;
         
@@ -530,7 +541,7 @@
         `).join('');
     }
 
-    // --- ADD/REMOVE LOGIC (FIXED) ---
+    // --- ADD/REMOVE LOGIC ---
     function addToLineup(idx) {
         const p = userData.collection[idx];
         
@@ -555,14 +566,16 @@
     function addToBench(idx) {
         if(userData.bench.length >= 7) return alert("הספסל מלא!");
         const playerToMove = userData.collection.splice(idx, 1)[0];
+        
         if(!playerToMove.sId) playerToMove.sId = "s_" + Date.now();
+
         userData.bench.push(playerToMove);
         save();
         render();
     }
 
     function removeFromLineup(sId) {
-        const idx = userData.lineup.findIndex(x => x.sId === sId);
+        const idx = userData.lineup.findIndex(p => p.sId === sId);
         if(idx > -1) {
             const p = userData.lineup.splice(idx, 1)[0];
             userData.collection.push(p);
@@ -570,9 +583,9 @@
             render();
         }
     }
-    
+
     function removeFromBench(sId) {
-        const idx = userData.bench.findIndex(x => x.sId === sId);
+        const idx = userData.bench.findIndex(p => p.sId === sId);
         if(idx > -1) {
             const p = userData.bench.splice(idx, 1)[0];
             userData.collection.push(p);
@@ -581,25 +594,18 @@
         }
     }
 
-    // --- CHAT ---
     function sendChat() {
-        const input = document.getElementById('chat-input');
-        const val = input.value;
-        if(val.trim()) {
-            db.ref('chat').push({u: myId, t: val});
-            input.value = "";
-        }
+        const inp = document.getElementById('chat-input');
+        const msg = inp.value;
+        if(!msg.trim()) return;
+
+        db.ref('chat').push({
+            name: myId,
+            msg: msg,
+            time: Date.now()
+        });
+        inp.value = "";
     }
-
-    db.ref('chat').limitToLast(15).on('child_added', s => {
-        const m = s.val();
-        const win = document.getElementById('chat-window');
-        win.innerHTML += `<div style="margin-bottom:4px;"><b style="color:var(--gold)">${m.u}:</b> ${m.t}</div>`;
-        win.scrollTop = win.scrollHeight;
-    });
-
 </script>
-</body>
-</html>
 </body>
 </html>

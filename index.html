@@ -124,6 +124,14 @@
 
         @keyframes cardGlow { 0%, 100% { box-shadow: 0 0 5px var(--gold-dark); } 50% { box-shadow: 0 0 20px var(--gold); } }
 
+        /* אנימציית עליית רמה חדשה */
+        @keyframes levelUp {
+            0% { transform: scale(1); box-shadow: 0 0 0px var(--xp); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px var(--xp); }
+            100% { transform: scale(1); box-shadow: 0 0 0px var(--xp); }
+        }
+        .leveling { animation: levelUp 0.8s ease-out; }
+
         .card-pro img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); background: #000; }
         .card-pro .rating { 
             position: absolute; top: -5px; right: -5px; 
@@ -190,7 +198,10 @@
 
 <div class="header">
     <div class="user-info">
-        <div class="team-name" id="display-team-name">FC67 TEAM</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div class="team-name" id="display-team-name">FC67 TEAM</div>
+            <button onclick="changeName()" style="background:none; border:none; cursor:pointer; font-size:1rem;">✏️</button>
+        </div>
         <div class="stats-pills">
             <div class="pill xp-badge">LVL <span id="val-lvl">1</span></div>
             <div class="pill" style="color: #22c55e;">⚡ <span id="val-energy">10</span>/10</div>
@@ -224,7 +235,7 @@
     </div>
 
     <button class="btn btn-gold" style="height: 60px; font-size: 1.2rem; box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);" onclick="startLeagueMatch()">
-           שחק משחק ליגה (⚡ 2)
+            שחק משחק ליגה (⚡ 2)
     </button>
 
     <h3 style="margin-top: 40px; border-bottom: 2px solid var(--glass); padding-bottom: 10px;">האוסף שלי</h3>
@@ -315,7 +326,8 @@
     let myId = localStorage.getItem('fc67_uid') || "Guest_" + Math.floor(Math.random()*9999);
     localStorage.setItem('fc67_uid', myId);
     
-    let user = { coins: 1000, energy: 10, xp: 0, lvl: 1, lastDaily: 0, collection: [], lineup: [], bench: [], ovr: 0 };
+    // הוספת teamName לאובייקט הדיפולטי
+    let user = { coins: 1000, energy: 10, xp: 0, lvl: 1, lastDaily: 0, collection: [], lineup: [], bench: [], ovr: 0, teamName: "" };
     let packTemp = null;
     let isOpening = false;
 
@@ -331,10 +343,29 @@
         renderCollection();
     });
 
+    // פונקציית שמירה מעודכנת עם שם הקבוצה
     function save() {
         user.ovr = calculateOVR();
         db.ref('users/' + myId).set(user);
-        db.ref('leaderboard/' + myId).set({ name: myId, ovr: user.ovr, lvl: user.lvl });
+        db.ref('leaderboard/' + myId).set({ 
+            name: user.teamName || myId, // שמירה של השם הנבחר לטבלה
+            ovr: user.ovr, 
+            lvl: user.lvl 
+        });
+    }
+
+    // פונקציה חדשה לשינוי שם
+    function changeName() {
+        const newName = prompt("הכנס את שם הקבוצה החדש (עד 12 תווים):");
+        if (newName && newName.trim().length > 0) {
+            if (newName.length > 12) {
+                alert("השם ארוך מדי! נסה שם קצר יותר.");
+                return;
+            }
+            user.teamName = newName.trim();
+            save();
+            updateStatsUI();
+        }
     }
 
     function calculateOVR() {
@@ -343,14 +374,15 @@
     }
 
     function updateStatsUI() {
-        document.getElementById('display-team-name').innerText = myId;
+        // שימוש בשם הקבוצה אם קיים
+        document.getElementById('display-team-name').innerText = user.teamName || myId;
         document.getElementById('val-coins').innerText = user.coins.toLocaleString();
         document.getElementById('val-lvl').innerText = user.lvl;
         document.getElementById('val-energy').innerText = user.energy;
         
         const now = Date.now();
         const btn = document.getElementById('daily-bonus-btn');
-        btn.disabled = !(now - (user.lastDaily || 0) > 86400000);
+        if(btn) btn.disabled = !(now - (user.lastDaily || 0) > 86400000);
     }
 
     function openTab(name) {
@@ -391,20 +423,54 @@
                 <img src="${p.img}">
                 <div class="name">${p.name}</div>
             </div>`).join('');
-        document.getElementById('val-chem').innerText = (user.lineup.length * 16);
+            
+        // עדכון כימיה מתקדם: מקסימום 100, מבוסס על מספר השחקנים בהרכב
+        let chemScore = Math.min(100, Math.floor(user.lineup.length * 16.6)); 
+        document.getElementById('val-chem').innerText = chemScore;
     }
 
+    // פונקציית אימון שחקנים חדשה
+    function trainPlayer(idx) {
+        let p = user.collection[idx];
+        let cost = p.rating * 10; // עלות דינמית
+        
+        if (p.rating >= 99) return alert("השחקן כבר במקסימום!");
+        if (user.coins < cost) return alert(`אין מספיק מטבעות! עלות: ${cost} 💰`);
+
+        if (confirm(`לשדרג את ${p.name} לרמה ${p.rating + 1} ב-${cost} מטבעות?`)) {
+            user.coins -= cost;
+            p.rating += 1;
+            
+            // הוספת אפקט ויזואלי זמני
+            save();
+            renderCollection(); // רינדור מחדש כדי לעדכן מספרים
+            alert(`🎉 ${p.name} שודרג בהצלחה!`);
+        }
+    }
+
+    // רינדור אוסף עם כפתור אימון
     function renderCollection() {
         const grid = document.getElementById('collection-grid');
         grid.innerHTML = user.collection.map((p, i) => `
             <div class="inv-card">
-                <img src="${p.img}" style="width:60px; height:60px; border-radius:50%; border:2px solid var(--gold);">
-                <div style="font-weight:800; margin-top:5px;">${p.name} (${p.rating})</div>
-                <div style="display:flex; gap:5px; margin-top:10px;">
-                    <button class="btn btn-primary" style="padding:5px;" onclick="moveToLineup(${i})">הרכב</button>
-                    <button class="btn btn-outline" style="padding:5px;" onclick="moveToBench(${i})">ספסל</button>
+                <div style="position: relative;">
+                    <img src="${p.img}" style="width:60px; height:60px; border-radius:50%; border:2px solid var(--gold);">
+                    <div style="position: absolute; top:-5px; left:-5px; background:var(--xp); color:white; padding:2px 5px; border-radius:5px; font-size:0.7rem;">
+                        ${p.pos}
+                    </div>
                 </div>
-                <button class="btn btn-danger" style="padding:5px; font-size:0.7rem;" onclick="listOnMarket(${i})">מכור</button>
+                <div style="font-weight:800; margin-top:5px;">${p.name} (${p.rating})</div>
+                
+                <div style="display:flex; flex-direction:column; gap:5px; margin-top:10px;">
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn btn-primary" style="padding:5px; font-size:0.7rem;" onclick="moveToLineup(${i})">הרכב</button>
+                        <button class="btn btn-outline" style="padding:5px; font-size:0.7rem;" onclick="moveToBench(${i})">ספסל</button>
+                    </div>
+                    <button class="btn btn-gold" style="padding:5px; font-size:0.7rem; background: #a855f7; color:white;" onclick="trainPlayer(${i})">
+                        🏋️ שדרג (${p.rating * 10} 💰)
+                    </button>
+                    <button class="btn btn-danger" style="padding:5px; font-size:0.7rem;" onclick="listOnMarket(${i})">מכור</button>
+                </div>
             </div>`).join('');
     }
 
@@ -595,25 +661,27 @@
                     if(p.seller !== myId) {
                         grid.innerHTML += `<div class="inv-card">
                             <img src="${p.img}" style="width:50px; border-radius:50%;">
-                            <h4>${p.name}</h4>
-                            <div style="color:var(--gold)">${p.price} 💰</div>
-                            <button class="btn btn-gold" onclick="buyFromMarket('${key}', ${p.price})">קנה</button>
+                            <div>${p.name} (${p.rating})</div>
+                            <div style="color:var(--gold); font-weight:bold;">${p.price} 💰</div>
+                            <button class="btn btn-primary" onclick="buyFromMarket('${key}')">קנה</button>
                         </div>`;
                     }
                 }
-            }
+            } else { grid.innerHTML = "<p>השוק ריק כרגע...</p>"; }
         });
     }
 
-    function buyFromMarket(key, price) {
-        if(user.coins < price) return alert("אין כסף!");
+    function buyFromMarket(key) {
         db.ref('market/' + key).once('value', snap => {
             const p = snap.val();
-            user.coins -= price;
-            user.collection.push({...p, uId: "p_" + Date.now()});
-            db.ref('market/' + key).remove();
-            db.ref('users/' + p.seller + '/coins').transaction(c => (c||0) + price);
-            save(); alert("השחקן הגיע!"); loadMarket();
+            if(p && user.coins >= p.price) {
+                user.coins -= p.price;
+                user.collection.push(p);
+                db.ref('market/' + key).remove();
+                save();
+                alert("קנית את " + p.name + "!");
+                loadMarket();
+            } else { alert("אין מספיק כסף או שהשחקן כבר נמכר"); }
         });
     }
 
@@ -621,29 +689,49 @@
         db.ref('leaderboard').orderByChild('ovr').limitToLast(10).once('value', snap => {
             const list = document.getElementById('leaderboard-list');
             list.innerHTML = "";
-            let ranks = []; snap.forEach(c => ranks.push(c.val()));
-            ranks.reverse().forEach((u, i) => {
-                list.innerHTML += `<div class="lb-item"><span>${i+1}. ${u.name}</span><b>${u.ovr} OVR</b></div>`;
+            let arr = [];
+            snap.forEach(c => arr.push(c.val()));
+            arr.reverse().forEach((u, i) => {
+                list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; background:var(--glass); margin-bottom:5px; border-radius:10px;">
+                    <span>#${i+1} ${u.name}</span>
+                    <span style="color:var(--gold); font-weight:bold;">${u.ovr} OVR</span>
+                </div>`;
             });
+        });
+        
+        // Chat Listener
+        db.ref('chat').limitToLast(15).on('child_added', snap => {
+            const msg = snap.val();
+            const box = document.getElementById('chat-box');
+            box.innerHTML += `<div style="margin-bottom:5px;">
+                <span style="color:var(--accent); font-weight:bold;">${msg.name}:</span> 
+                <span style="color:#e2e8f0;">${msg.text}</span>
+            </div>`;
+            box.scrollTop = box.scrollHeight;
         });
     }
 
     function sendChatMessage() {
-        const msg = document.getElementById('chat-input').value;
-        if(!msg) return;
-        db.ref('chat').push({ name: myId, msg: msg });
-        document.getElementById('chat-input').value = "";
+        const input = document.getElementById('chat-input');
+        const text = input.value;
+        if(text) {
+            db.ref('chat').push({ name: user.teamName || "Anonymous", text: text });
+            input.value = "";
+        }
     }
-
-    db.ref('chat').limitToLast(15).on('child_added', snap => {
-        const c = snap.val();
-        document.getElementById('chat-box').innerHTML += `<div><b style="color:var(--accent)">${c.name}:</b> ${c.msg}</div>`;
-        document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
-    });
-
+    
+    // Daily Bonus
     function claimDaily() {
-        user.coins += 200; user.lastDaily = Date.now(); save();
+        const now = Date.now();
+        if(now - (user.lastDaily || 0) > 86400000) {
+            user.coins += 200;
+            user.lastDaily = now;
+            save();
+            updateStatsUI();
+            alert("קיבלת 200 מטבעות!");
+        } else { alert("כבר לקחת את הבונוס היום!"); }
     }
+
 </script>
 </body>
 </html>

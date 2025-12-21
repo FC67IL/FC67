@@ -114,6 +114,7 @@
             position: relative;
             display: flex; flex-direction: column; align-items: center; padding-top: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            cursor: pointer;
         }
 
         .card-pro.elite {
@@ -165,7 +166,7 @@
             border-radius: 20px; padding: 20px; overflow-y: auto; border: 1px solid #1e293b;
             display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem;
         }
-        .log-entry { animation: fadeIn 0.3s ease; display: flex; align-items: flex-start; gap: 10px; }
+        .log-entry { animation: fadeIn 0.3s ease; display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;}
         @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } }
 
         #kickoff-anim {
@@ -178,7 +179,7 @@
             position: fixed; inset: 0; background: #000; z-index: 6000;
             display: none; align-items: center; justify-content: center;
         }
-        .pack-container { width: 200px; cursor: pointer; transition: 0.5s; }
+        .pack-container { width: 200px; cursor: pointer; transition: 0.5s; text-align: center; }
 
         #loading-screen {
             position: fixed; inset: 0; background: #020617; z-index: 9999;
@@ -263,7 +264,9 @@
     <h3>🏆 טבלת המנצחים</h3>
     <div id="leaderboard-list"></div>
     <h3 style="margin-top: 30px;">💬 צ'אט</h3>
-    <div id="chat-box" style="height: 200px; background: #000; border-radius: 15px; padding: 15px; overflow-y: auto; margin-bottom: 10px;"></div>
+    <div id="chat-box" style="height: 200px; background: #000; border-radius: 15px; padding: 15px; overflow-y: auto; margin-bottom: 10px;">
+        <div style="color:#aaa; font-size:0.8rem;">המערכת: ברוך הבא לצ'אט!</div>
+    </div>
     <div style="display:flex; gap:10px;">
         <input type="text" id="chat-input" placeholder="הודעה..." style="flex:1; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; color: #fff;">
         <button class="btn btn-primary" style="width: 80px; margin:0;" onclick="sendChatMessage()">שלח</button>
@@ -277,6 +280,7 @@
         <div class="vs">VS</div>
         <div><div id="m-away-name">BOT</div><div class="score-num" id="m-away-score">0</div></div>
     </div>
+    <div style="color: var(--gold); font-weight:bold; margin-bottom:5px;">דקה: <span id="match-timer">0</span>'</div>
     <div class="match-log" id="match-log"></div>
     <button id="btn-match-exit" class="btn btn-gold" style="display:none; width: 220px;" onclick="closeMatch()">חזור למועדון</button>
 </div>
@@ -310,8 +314,6 @@
     let myId = null;
 
     // --- PLAYER DATA ---
-    const specialPlayers = [
-// --- PLAYER DATA (FIXED IMAGES) ---
     const specialPlayers = [
         {
             name: "כושי", 
@@ -359,13 +361,13 @@
             name: "וויני", 
             pos: "MID", 
             rating: 88, 
-            img: "https://b.fssta.com/uploads/application/soccer/headshots/2464.vresize.350.350.medium.43.png" 
+            img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Winnie&backgroundColor=ffdfbf" 
         },
         {
             name: "יונתן_פדרי", 
             pos: "MID", 
             rating: 88, 
-            img: "https://b.fssta.com/uploads/application/soccer/headshots/61787.vresize.350.350.medium.86.png"
+            img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedri&backgroundColor=c0aede"
         },
         {
             name: "אור", 
@@ -471,7 +473,7 @@
         }
     ];
 
-    const firstNames = ["כושי", "הביגון", "מר", "איר", "שרק", "בום", "קריסטל", "וויני", "יונתן", "אור", "דוד", "טוי", "גבינה", "שבותה", "יאיא", "דרופיקס", "עילאי", "גולדי", "אקספרין", "רין", "איירון", "איתמר", "טלקר", "שף", "בובו", "מיכאל"];
+    const firstNames = ["יוסי", "רוני", "דני", "גיל", "טל", "אבי", "עומר", "עידן", "מני", "שי", "גל", "נועם"];
     const positions = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"];
 
     function generateRandomPlayer(minRating, maxRating) {
@@ -482,8 +484,7 @@
         const rName = firstNames[Math.floor(Math.random() * firstNames.length)];
         const rPos = positions[Math.floor(Math.random() * positions.length)];
         const rRating = Math.floor(Math.random() * (maxRating - minRating + 1)) + minRating;
-        let imgUrl = "https://cdn-icons-png.flaticon.com/512/166/166344.png";
-        if (rRating >= 90) imgUrl = "https://cdn-icons-png.flaticon.com/512/3283/3283318.png";
+        let imgUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=" + rName + "&backgroundColor=e5e7eb";
         return { name: rName, rating: rRating, pos: rPos, img: imgUrl, uId: "gen_" + Date.now() + Math.random() };
     }
 
@@ -506,6 +507,8 @@
                 updateStatsUI();
                 renderClub();
                 renderCollection();
+                renderMarket();
+                renderLeaderboard();
             } else {
                 for(let i=0; i<6; i++) user.collection.push(generateRandomPlayer(70, 80));
                 save();
@@ -520,6 +523,9 @@
         document.getElementById('val-coins').innerText = user.coins;
         document.getElementById('val-lvl').innerText = user.lvl;
         document.getElementById('val-energy').innerText = user.energy;
+        // חישוב כימיה פשוט: אחוז השחקנים בהרכב מתוך 6
+        let chem = Math.floor((user.lineup.length / 6) * 100);
+        document.getElementById('val-chem').innerText = chem;
     }
 
     function openTab(name) {
@@ -570,7 +576,7 @@
     function moveToLineup(i) {
         const p = user.collection[i];
         const lim = {FWD:1, MID:2, DEF:2, GK:1};
-        if(user.lineup.filter(x=>x.pos===p.pos).length >= lim[p.pos]) return alert("מלא!");
+        if(user.lineup.filter(x=>x.pos===p.pos).length >= lim[p.pos]) return alert("עמדה זו מלאה בהרכב!");
         user.lineup.push(user.collection.splice(i,1)[0]);
         save();
     }
@@ -606,7 +612,7 @@
         const res = document.getElementById('pack-result');
         res.style.display = 'block';
         document.getElementById('opened-card-container').innerHTML = `
-            <div class="card-pro elite" style="width:150px; height:210px; font-size:1.5rem;">
+            <div class="card-pro elite" style="width:150px; height:210px; font-size:1.5rem; margin: 0 auto;">
                 <div class="rating" style="font-size:1.5rem;">${packTemp.rating}</div>
                 <img src="${packTemp.img}" style="width:100px; height:100px; margin-top:20px;">
                 <div class="name" style="font-size:1.2rem; margin-top:15px;">${packTemp.name}</div>
@@ -620,22 +626,166 @@
     }
 
     function claimDaily() {
+        // Simple logic - normally check date
         user.coins += 500;
         save();
         alert("קיבלת 500 מטבעות!");
     }
 
-    // --- MATCH (BASIC) ---
-    function startLeagueMatch() {
-        if(user.lineup.length < 6) return alert("הרכב חסר!");
-        document.getElementById('match-overlay').style.display = 'flex';
-        // לוגיקה פשוטה למשחק מהיר
-        setTimeout(() => {
-            document.getElementById('btn-match-exit').style.display = 'block';
-            document.getElementById('match-log').innerHTML = "המשחק הסתיים!";
-        }, 2000);
+    // --- MARKET & SOCIAL (FAKE DATA) ---
+    function renderMarket() {
+        const marketDiv = document.getElementById('market-grid');
+        if(marketDiv.children.length > 0) return; // Don't re-render
+        
+        for(let i=0; i<4; i++) {
+            let p = generateRandomPlayer(80, 95);
+            let cost = p.rating * 100;
+            marketDiv.innerHTML += `
+                <div class="inv-card">
+                    <img src="${p.img}" style="width:40px; border-radius:50%;">
+                    <div><b>${p.name}</b></div>
+                    <div>${p.rating}</div>
+                    <button class="btn btn-outline" onclick="alert('נמכר!')">${cost} 💰</button>
+                </div>
+            `;
+        }
     }
-    function closeMatch() { document.getElementById('match-overlay').style.display = 'none'; }
+
+    function renderLeaderboard() {
+        const list = document.getElementById('leaderboard-list');
+        list.innerHTML = `
+            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
+                <span>🥇 המלך1</span><span>LVL 50</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
+                <span>🥈 אלוף</span><span>LVL 42</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.1);">
+                <span>👤 אתה</span><span>LVL ${user.lvl}</span>
+            </div>
+        `;
+    }
+
+    function sendChatMessage() {
+        let input = document.getElementById('chat-input');
+        if(!input.value) return;
+        let box = document.getElementById('chat-box');
+        box.innerHTML += `<div><b style="color:var(--accent)">אני:</b> ${input.value}</div>`;
+        input.value = "";
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // --- MATCH LOGIC ---
+    let matchInterval;
+    
+    function startLeagueMatch() {
+        if(user.lineup.length < 6) return alert("ההרכב שלך חסר! עליך להציב 6 שחקנים כדי לשחק.");
+        if(user.energy < 2) return alert("אין מספיק אנרגיה! המתן לטעינה.");
+        
+        user.energy -= 2;
+        save();
+
+        document.getElementById('match-overlay').style.display = 'flex';
+        document.getElementById('btn-match-exit').style.display = 'none';
+        document.getElementById('match-log').innerHTML = "";
+        document.getElementById('kickoff-anim').style.display = 'block';
+
+        let homeScore = 0;
+        let awayScore = 0;
+        let minute = 0;
+        
+        // Update Names
+        document.getElementById('m-home-name').innerText = "אנחנו";
+        document.getElementById('m-away-name').innerText = "יריב";
+        
+        // Calculate Team Strengths
+        let myStrength = user.lineup.reduce((a,b) => a + b.rating, 0) / 6;
+        let oppStrength = 75 + (user.lvl * 2) + Math.floor(Math.random()*10); // Harder as you lvl up
+
+        setTimeout(() => {
+            document.getElementById('kickoff-anim').style.display = 'none';
+            
+            matchInterval = setInterval(() => {
+                minute += 4; // Fast forward time
+                document.getElementById('match-timer').innerText = minute;
+
+                // Event Chance
+                if(Math.random() > 0.6) {
+                    let isMyAtt = Math.random() * (myStrength + 10) > Math.random() * (oppStrength + 10);
+                    let eventText = "";
+                    
+                    if(isMyAtt) {
+                        // My Attack
+                        if(Math.random() > 0.4) {
+                            homeScore++;
+                            eventText = `<span style="color:var(--success)">⚽ גול!!! השחקנים שלך מבקיעים!</span>`;
+                        } else {
+                            eventText = `<span>בעיטה מסוכנת שלך... החוצה.</span>`;
+                        }
+                    } else {
+                        // Opponent Attack
+                        if(Math.random() > 0.4) {
+                            awayScore++;
+                            eventText = `<span style="color:var(--danger)">⚽ ספיגה... היריב הבקיע.</span>`;
+                        } else {
+                            eventText = `<span>הצלה גדולה של השוער שלך!</span>`;
+                        }
+                    }
+                    
+                    let logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    logEntry.innerHTML = `<div>${minute}'</div> <div>${eventText}</div>`;
+                    let logBox = document.getElementById('match-log');
+                    logBox.prepend(logEntry);
+                }
+
+                document.getElementById('m-home-score').innerText = homeScore;
+                document.getElementById('m-away-score').innerText = awayScore;
+
+                if(minute >= 90) {
+                    endMatch(homeScore, awayScore);
+                }
+
+            }, 200); // Speed of match
+        }, 1500);
+    }
+
+    function endMatch(h, a) {
+        clearInterval(matchInterval);
+        let msg = "";
+        let rewardCoins = 50;
+        let rewardXP = 10;
+
+        if(h > a) {
+            msg = "ניצחון ענק! 🏆";
+            rewardCoins = 300;
+            rewardXP = 50;
+        } else if (h === a) {
+            msg = "תיקו מכובד.";
+            rewardCoins = 100;
+            rewardXP = 20;
+        } else {
+            msg = "הפסד כואב...";
+        }
+
+        let logBox = document.getElementById('match-log');
+        logBox.innerHTML = `<h2 style="text-align:center; color:var(--gold);">${msg}</h2>` + logBox.innerHTML;
+        
+        user.coins += rewardCoins;
+        user.xp += rewardXP;
+        if(user.xp > user.lvl * 100) {
+            user.lvl++;
+            user.xp = 0;
+            alert("עלית רמה! LVL " + user.lvl);
+        }
+        save();
+        
+        document.getElementById('btn-match-exit').style.display = 'block';
+    }
+
+    function closeMatch() { 
+        document.getElementById('match-overlay').style.display = 'none'; 
+    }
 </script>
 
 </body>

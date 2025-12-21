@@ -85,7 +85,6 @@
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Pitch */
         .pitch-container {
             background: #064e3b;
             background-image: repeating-linear-gradient(90deg, transparent, transparent 10%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.03) 20%);
@@ -150,7 +149,6 @@
         .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
         .btn-danger { background: var(--danger); color: #fff; }
 
-        /* MATCH ENGINE STYLES */
         #match-overlay {
             position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98);
             z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
@@ -176,14 +174,11 @@
         }
         @keyframes zoomOut { from { transform: scale(1.5); opacity: 1; } to { transform: scale(0.5); opacity: 0; } }
 
-        /* PACK OPENING */
         #pack-open {
             position: fixed; inset: 0; background: #000; z-index: 6000;
             display: none; align-items: center; justify-content: center;
         }
         .pack-container { width: 200px; cursor: pointer; transition: 0.5s; }
-        .shaking { animation: shake 0.2s infinite; }
-        @keyframes shake { 0% { transform: translate(2px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } }
 
         #loading-screen {
             position: fixed; inset: 0; background: #020617; z-index: 9999;
@@ -215,7 +210,7 @@
     <button id="btn-club" class="active" onclick="openTab('club')">🏠 מועדון</button>
     <button id="btn-store" onclick="openTab('store')">🛒 חנות</button>
     <button id="btn-market" onclick="openTab('market')">⚖️ שוק</button>
-    <button id="btn-social" onclick="openTab('social')"> 💬 צאט</button>
+    <button id="btn-social" onclick="openTab('social')"> 💬 צ'אט</button>
 </div>
 
 <div id="tab-club" class="tab active">
@@ -242,9 +237,6 @@
 </div>
 
 <div id="tab-store" class="tab">
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="font-size: 2rem; color: var(--gold);">חנות החבילות</h2>
-    </div>
     <div class="grid">
         <div class="inv-card">
             <div style="font-size: 3rem;">📦</div>
@@ -252,11 +244,10 @@
             <p>שחקנים 75-84</p>
             <button class="btn btn-gold" onclick="buyPack('regular')">250 💰</button>
         </div>
-        <div class="inv-card" style="background: linear-gradient(to bottom, rgba(251,191,36,0.1), var(--card)); border: 1px solid var(--gold);">
+        <div class="inv-card" style="border: 1px solid var(--gold);">
             <div style="font-size: 3rem;">🌟</div>
             <h3>חבילת פרימיום</h3>
             <p>שחקנים 84-99</p>
-            <p style="font-size:0.8rem; color: #fbbf24;">סיכוי גבוה למיוחדים!</p>
             <button class="btn btn-gold" onclick="buyPack('premium')">800 💰</button>
         </div>
     </div>
@@ -271,8 +262,8 @@
 <div id="tab-social" class="tab">
     <h3>🏆 טבלת המנצחים</h3>
     <div id="leaderboard-list"></div>
-    <h3 style="margin-top: 30px;">💬 צ'אט גלובלי</h3>
-    <div id="chat-box" style="height: 200px; background: #000; border-radius: 15px; padding: 15px; overflow-y: auto; margin-bottom: 10px; border: 1px solid var(--glass);"></div>
+    <h3 style="margin-top: 30px;">💬 צ'אט</h3>
+    <div id="chat-box" style="height: 200px; background: #000; border-radius: 15px; padding: 15px; overflow-y: auto; margin-bottom: 10px;"></div>
     <div style="display:flex; gap:10px;">
         <input type="text" id="chat-input" placeholder="הודעה..." style="flex:1; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; color: #fff;">
         <button class="btn btn-primary" style="width: 80px; margin:0;" onclick="sendChatMessage()">שלח</button>
@@ -281,37 +272,28 @@
 
 <div id="match-overlay">
     <div id="kickoff-anim">3</div>
-    <div id="match-title" style="color: var(--accent); font-weight: 800; margin-bottom: 10px; letter-spacing: 2px;">LIVE MATCH</div>
     <div class="scoreboard">
-        <div>
-            <div id="m-home-name" style="font-weight: 800; font-size: 0.9rem;">YOU</div>
-            <div class="score-num" id="m-home-score">0</div>
-        </div>
+        <div><div id="m-home-name">YOU</div><div class="score-num" id="m-home-score">0</div></div>
         <div class="vs">VS</div>
-        <div>
-            <div id="m-away-name" style="font-weight: 800; font-size: 0.9rem;">BOT FC</div>
-            <div class="score-num" id="m-away-score">0</div>
-        </div>
+        <div><div id="m-away-name">BOT</div><div class="score-num" id="m-away-score">0</div></div>
     </div>
     <div class="match-log" id="match-log"></div>
-    <button id="btn-match-exit" class="btn btn-gold" style="display:none; width: 220px; margin-top: 20px;" onclick="closeMatch()">סיים וחזור למועדון</button>
+    <button id="btn-match-exit" class="btn btn-gold" style="display:none; width: 220px;" onclick="closeMatch()">חזור למועדון</button>
 </div>
 
-<div id="pack-open" onclick="triggerReveal()">
-    <div id="pack-obj" class="pack-container" style="text-align:center;">
+<div id="pack-open">
+    <div id="pack-obj" class="pack-container" onclick="triggerReveal()">
         <div style="font-size: 120px;">🧧</div>
         <h2 id="pack-hint">לחץ לפתיחה!</h2>
     </div>
-    <div id="pack-result" style="display:none; text-align:center; width: 100%;">
-        <div id="opened-card-container" style="display:flex; justify-content:center;"></div>
-        <div id="opened-player-name" style="font-size: 2rem; font-weight: 900; margin-top: 20px; color: var(--gold);"></div>
-        <button class="btn btn-gold" style="width: 200px; margin: 40px auto;" onclick="confirmPack()">הוסף למועדון</button>
+    <div id="pack-result" style="display:none; text-align:center;">
+        <div id="opened-card-container"></div>
+        <button class="btn btn-gold" style="width: 200px; margin: 20px auto;" onclick="confirmPack()">הוסף למועדון</button>
     </div>
 </div>
 
 <script>
-    // --- DATABASE CONFIG ---
-    // השארתי את הקונפיגורציה שלך, אבל הוספנו מנגנון אבטחה למטה
+    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyDAyQfRIPiJO2pENF4AF9LDWTjyLeOrQNY",
         authDomain: "fc67-3de49.firebaseapp.com",
@@ -322,88 +304,64 @@
         appId: "1:484648478424:web:dfd4899b7477cc83f699ad"
     };
     
-    // בדיקה שהפיירבייס נטען
-    if (typeof firebase === 'undefined') {
-        alert("שגיאה בטעינת המערכת. בדוק את החיבור לאינטרנט ונסה לרענן.");
-    } else {
-        firebase.initializeApp(firebaseConfig);
-    }
-
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
-    let myId = null; // ייקבע לאחר ההתחברות
+    let myId = null;
 
-    // --- מערכת שחקנים גנרית + מיוחדים (תיקון החבילות) ---
+    // --- PLAYER DATA ---
     const specialPlayers = [
-const players = [
-    {name: "כושי", pos: "FWD", rating: 99, img: "https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"},
-    {name: "הביגון", pos: "GK", rating: 91, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
-    {name: "מר", pos: "FWD", rating: 91, img: "https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
-    {name: "איר", pos: "GK", rating: 90, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
-    {name: "שרק", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
-    {name: "בום", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
-    {name: "קריסטל", pos: "MID", rating: 89, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
-    {name: "וויני", pos: "MID", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
-    {name: "יונתן_פדרי", pos: "MID", rating: 88, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
-    {name: "אור", pos: "FWD", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
-    {name: "דוד", pos: "DEF", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960"},
-    {name: "טוי", pos: "FWD", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
-    {name: "גבינה", pos: "MID", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336082552651776/VRFS__2025-12-18_18-35-31.jpg?ex=6945cd8e&is=69447c0e&hm=b23825cfe2af008d946eea0c607562b4fd0b6377b3f4167f731e617e30a1f67c&=&format=webp"},
-    {name: "שבותה", pos: "MID", rating: 86, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336624318320691/2025-12-19_001354.png?ex=6945ce0f&is=69447c8f&hm=627bec49930ba5e8d88d9b6e8974327936ba5e8ed3ccd6084dc4f5420f20fbe6&=&format=webp&quality=lossless"},
-    {name: "יאיא", pos: "FWD", rating: 86, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327661803831488/VRFS__2025-12-18_18-27-18.jpg?ex=6945c5b6&is=69447436&hm=7d74b821c4941f765db80ad8c1995eef2bb99784db86858d5c5932c4b3d986f0&=&format=webp"},
-    {name: "דרופיקס", pos: "FWD", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335844064657531/2025-12-19_001025.png?ex=6945cd55&is=69447bd5&hm=857282b63386835b860c775eb4920a0258fade2497bc9e7924395d5071285da3&=&format=webp&quality=lossless"},
-    {name: "עילאי", pos: "DEF", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
-    {name: "גולדי", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337038656966817/gold-1920w.webp?ex=6945ce72&is=69447cf2&hm=dfc3efac8e6073074fbe6f7a19c7badf1751e8acc33b55f77aa6e3e1ab38816d&=&format=webp"},
-    {name: "אקספרין", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"},
-    {name: "רין", pos: "FWD", rating: 82, img: "https://www.picshare.co.il/m_pictures/img153010.jpg"},
-    {name: "איירון", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
-    {name: "איתמר", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
-    {name: "טלקר", pos: "DEF", rating: 80, img: "https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
-    {name: "שף", pos: "FWD", rating: 78, img: "https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
-    {name: "בובו", pos: "DEF", rating: 77, img: "https://via.placeholder.com/100?text=BOBO"},
-    {name: "מיכאל", pos: "MID", rating: 77, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205100394516525/WhatsApp_Image_2025-12-18_at_12.56.32_1.jpeg?ex=6947f692&is=6946a512&hm=3b598439097a05dd423c39f1fdb1cd47b7a760ca25a0a927599a06de6b54d2db&=&format=webp"}
+        {name: "כושי", pos: "FWD", rating: 99, img: "https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"},
+        {name: "הביגון", pos: "GK", rating: 91, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
+        {name: "מר", pos: "FWD", rating: 91, img: "https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
+        {name: "איר", pos: "GK", rating: 90, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
+        {name: "שרק", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
+        {name: "בום", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
+        {name: "קריסטל", pos: "MID", rating: 89, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
+        {name: "וויני", pos: "MID", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
+        {name: "יונתן_פדרי", pos: "MID", rating: 88, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
+        {name: "אור", pos: "FWD", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
+        {name: "דוד", pos: "DEF", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960"},
+        {name: "טוי", pos: "FWD", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
+        {name: "גבינה", pos: "MID", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336082552651776/VRFS__2025-12-18_18-35-31.jpg?ex=6945cd8e&is=69447c0e&hm=b23825cfe2af008d946eea0c607562b4fd0b6377b3f4167f731e617e30a1f67c&=&format=webp"},
+        {name: "שבותה", pos: "MID", rating: 86, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336624318320691/2025-12-19_001354.png?ex=6945ce0f&is=69447c8f&hm=627bec49930ba5e8d88d9b6e8974327936ba5e8ed3ccd6084dc4f5420f20fbe6&=&format=webp&quality=lossless"},
+        {name: "יאיא", pos: "FWD", rating: 86, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327661803831488/VRFS__2025-12-18_18-27-18.jpg?ex=6945c5b6&is=69447436&hm=7d74b821c4941f765db80ad8c1995eef2bb99784db86858d5c5932c4b3d986f0&=&format=webp"},
+        {name: "דרופיקס", pos: "FWD", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335844064657531/2025-12-19_001025.png?ex=6945cd55&is=69447bd5&hm=857282b63386835b860c775eb4920a0258fade2497bc9e7924395d5071285da3&=&format=webp&quality=lossless"},
+        {name: "עילאי", pos: "DEF", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
+        {name: "גולדי", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337038656966817/gold-1920w.webp?ex=6945ce72&is=69447cf2&hm=dfc3efac8e6073074fbe6f7a19c7badf1751e8acc33b55f77aa6e3e1ab38816d&=&format=webp"},
+        {name: "אקספרין", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"},
+        {name: "רין", pos: "FWD", rating: 82, img: "https://www.picshare.co.il/m_pictures/img153010.jpg"},
+        {name: "איירון", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
+        {name: "איתמר", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
+        {name: "טלקר", pos: "DEF", rating: 80, img: "https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
+        {name: "שף", pos: "FWD", rating: 78, img: "https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
+        {name: "בובו", pos: "DEF", rating: 77, img: "https://via.placeholder.com/100?text=BOBO"},
+        {name: "מיכאל", pos: "MID", rating: 77, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205100394516525/WhatsApp_Image_2025-12-18_at_12.56.32_1.jpeg?ex=6947f692&is=6946a512&hm=3b598439097a05dd423c39f1fdb1cd47b7a760ca25a0a927599a06de6b54d2db&=&format=webp"}
     ];
 
-const firstNames = ["כושי", "הביגון", "מר", "איר", "שרק", "בום", "קריסטל", "וויני", "יונתן", "אור", "דוד", "טוי", "גבינה", "שבותה", "יאיא", "דרופיקס", "עילאי", "גולדי", "אקספרין", "רין", "איירון", "איתמר", "טלקר", "שף", "בובו", "מיכאל"];
-const positions = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"]; // משקל גבוה יותר לשחקני שדה
-    function generateRandomPlayer(minRating, maxRating) {
-        // בודק אם להגריל שחקן מיוחד (סיכוי נמוך)
-        if(Math.random() > 0.9 && maxRating > 88) {
-             const special = specialPlayers[Math.floor(Math.random() * specialPlayers.length)];
-             if(special.rating <= maxRating && special.rating >= minRating) return {...special};
-        }
+    const firstNames = ["כושי", "הביגון", "מר", "איר", "שרק", "בום", "קריסטל", "וויני", "יונתן", "אור", "דוד", "טוי", "גבינה", "שבותה", "יאיא", "דרופיקס", "עילאי", "גולדי", "אקספרין", "רין", "איירון", "איתמר", "טלקר", "שף", "בובו", "מיכאל"];
+    const positions = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"];
 
-        const rName = firstNames[Math.floor(Math.random()*firstNames.length)] + " " + lastNames[Math.floor(Math.random()*lastNames.length)];
-        const rPos = positions[Math.floor(Math.random()*positions.length)];
+    function generateRandomPlayer(minRating, maxRating) {
+        if(Math.random() > 0.85) {
+             const special = specialPlayers[Math.floor(Math.random() * specialPlayers.length)];
+             if(special.rating <= maxRating && special.rating >= minRating) return {...special, uId: "sp_" + Date.now() + Math.random()};
+        }
+        const rName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const rPos = positions[Math.floor(Math.random() * positions.length)];
         const rRating = Math.floor(Math.random() * (maxRating - minRating + 1)) + minRating;
-        
-        // תמונה גנרית לפי רייטינג
-        let imgUrl = "https://cdn-icons-png.flaticon.com/512/166/166344.png"; // ברירת מחדל
-        if (rRating >= 90) imgUrl = "https://cdn-icons-png.flaticon.com/512/3283/3283318.png"; // זהב
-        
-        return { name: rName, rating: rRating, pos: rPos, img: imgUrl };
+        let imgUrl = "https://cdn-icons-png.flaticon.com/512/166/166344.png";
+        if (rRating >= 90) imgUrl = "https://cdn-icons-png.flaticon.com/512/3283/3283318.png";
+        return { name: rName, rating: rRating, pos: rPos, img: imgUrl, uId: "gen_" + Date.now() + Math.random() };
     }
 
-    // --- GAME STATE ---
-    let user = { coins: 1500, energy: 10, xp: 0, lvl: 1, lastDaily: 0, collection: [], lineup: [], bench: [], ovr: 0 };
+    // --- GAME ENGINE ---
+    let user = { coins: 1500, energy: 10, xp: 0, lvl: 1, collection: [], lineup: [], bench: [] };
     let packTemp = null;
-    let isOpening = false;
 
-    // --- AUTHENTICATION & START ---
-    // כאן מתבצע התיקון הקריטי לאינטרנט
-    auth.signInAnonymously().catch((error) => {
-        console.error("Auth failed:", error);
-        alert("שגיאת התחברות לשרת: " + error.message);
-    });
-
-    auth.onAuthStateChanged((firebaseUser) => {
-        if (firebaseUser) {
-            myId = firebaseUser.uid;
-            document.getElementById('loading-screen').style.display = 'none';
-            initGame();
-        } else {
-            console.log("No user");
-        }
+    auth.signInAnonymously().catch(e => console.error(e));
+    auth.onAuthStateChanged(fu => { 
+        if(fu) { myId = fu.uid; initGame(); } 
     });
 
     function initGame() {
@@ -414,37 +372,22 @@ const positions = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"]; // משקל 
                 if(!user.lineup) user.lineup = [];
                 if(!user.bench) user.bench = [];
                 updateStatsUI();
-            } else { 
-                // משתמש חדש - ניתן לו חבילת התחלה
-                for(let i=0; i<5; i++) user.collection.push({...generateRandomPlayer(70, 80), uId: "start_"+i});
-                save(); 
+                renderClub();
+                renderCollection();
+            } else {
+                for(let i=0; i<6; i++) user.collection.push(generateRandomPlayer(70, 80));
+                save();
             }
-            renderClub();
-            renderCollection();
+            document.getElementById('loading-screen').style.display = 'none';
         });
     }
 
-    function save() {
-        user.ovr = calculateOVR();
-        db.ref('users/' + myId).set(user);
-        db.ref('leaderboard/' + myId).set({ name: "User "+myId.substring(0,4), ovr: user.ovr, lvl: user.lvl });
-    }
-
-    function calculateOVR() {
-        if(user.lineup.length === 0) return 0;
-        return Math.round(user.lineup.reduce((a, b) => a + b.rating, 0) / 6);
-    }
+    function save() { db.ref('users/' + myId).set(user); }
 
     function updateStatsUI() {
-        document.getElementById('display-team-name').innerText = "TEAM " + myId.substring(0,4);
-        document.getElementById('val-coins').innerText = user.coins.toLocaleString();
+        document.getElementById('val-coins').innerText = user.coins;
         document.getElementById('val-lvl').innerText = user.lvl;
         document.getElementById('val-energy').innerText = user.energy;
-        
-        const now = Date.now();
-        const btn = document.getElementById('daily-bonus-btn');
-        btn.disabled = !(now - (user.lastDaily || 0) > 86400000);
-        if(btn.disabled) btn.innerText = "הבונוס נלקח להיום";
     }
 
     function openTab(name) {
@@ -452,325 +395,116 @@ const positions = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"]; // משקל 
         document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-' + name).classList.add('active');
         document.getElementById('btn-' + name).classList.add('active');
-        if(name === 'social') loadSocial();
-        if(name === 'market') loadMarket();
     }
 
-    // --- CLUB RENDERING ---
     function renderClub() {
         const pitch = document.getElementById('pitch-ui');
         pitch.innerHTML = "";
-        const formation = [{ pos: 'FWD', count: 1 }, { pos: 'MID', count: 2 }, { pos: 'DEF', count: 2 }, { pos: 'GK', count: 1 }];
+        const formation = [{p:'FWD',c:1}, {p:'MID',c:2}, {p:'DEF',c:2}, {p:'GK',c:1}];
         
         formation.forEach(row => {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = "pitch-row";
-            const players = user.lineup.filter(p => p.pos === row.pos);
-            for(let i=0; i<row.count; i++) {
-                const p = players[i];
-                rowDiv.innerHTML += p ? `
-                    <div class="card-pro ${p.rating >= 90 ? 'elite' : ''}" onclick="removeFromLineup('${p.uId}')">
+            const div = document.createElement('div');
+            div.className = "pitch-row";
+            const plrs = user.lineup.filter(x => x.pos === row.p);
+            for(let i=0; i<row.c; i++){
+                const p = plrs[i];
+                div.innerHTML += p ? `
+                    <div class="card-pro ${p.rating>=90?'elite':''}" onclick="removeFromLineup('${p.uId}')">
                         <div class="rating">${p.rating}</div>
-                        <img src="${p.img}">
-                        <div class="name">${p.name}</div>
-                    </div>` : `<div class="slot">${row.pos}</div>`;
+                        <img src="${p.img}"><div class="name">${p.name}</div>
+                    </div>` : `<div class="slot">${row.p}</div>`;
             }
-            pitch.appendChild(rowDiv);
+            pitch.appendChild(div);
         });
 
-        const benchUI = document.getElementById('bench-ui');
-        benchUI.innerHTML = user.bench.map(p => `
-            <div class="card-pro" onclick="removeFromBench('${p.uId}')" style="min-width:80px;">
+        document.getElementById('bench-ui').innerHTML = user.bench.map(p => `
+            <div class="card-pro" onclick="removeFromBench('${p.uId}')">
                 <div class="rating">${p.rating}</div>
-                <img src="${p.img}">
-                <div class="name">${p.name}</div>
+                <img src="${p.img}"><div class="name">${p.name}</div>
             </div>`).join('');
-        
-        let chem = 0;
-        user.lineup.forEach(p => chem += (p.rating > 80 ? 17 : 15));
-        document.getElementById('val-chem').innerText = Math.min(100, chem);
     }
 
     function renderCollection() {
-        const grid = document.getElementById('collection-grid');
-        grid.innerHTML = user.collection.map((p, i) => `
+        document.getElementById('collection-grid').innerHTML = user.collection.map((p, i) => `
             <div class="inv-card">
-                <img src="${p.img}" style="width:60px; height:60px; border-radius:50%; border:2px solid var(--gold);">
-                <div style="font-weight:800; margin-top:5px; font-size:0.9rem;">${p.name}</div>
-                <div style="font-size:0.8rem;">${p.pos} | <b>${p.rating}</b></div>
-                <div style="display:flex; gap:5px; margin-top:10px;">
-                    <button class="btn btn-primary" style="padding:5px;" onclick="moveToLineup(${i})">הרכב</button>
-                    <button class="btn btn-outline" style="padding:5px;" onclick="moveToBench(${i})">ספסל</button>
-                </div>
-                <button class="btn btn-danger" style="padding:5px; font-size:0.7rem;" onclick="listOnMarket(${i})">מכור</button>
+                <img src="${p.img}" style="width:50px; border-radius:50%;">
+                <div><b>${p.name}</b></div>
+                <div>${p.pos} | ${p.rating}</div>
+                <button class="btn btn-primary" onclick="moveToLineup(${i})">הרכב</button>
+                <button class="btn btn-outline" onclick="moveToBench(${i})">ספסל</button>
             </div>`).join('');
     }
 
-    // --- LINEUP LOGIC ---
-    function moveToLineup(idx) {
-        const p = user.collection[idx];
-        const limits = { FWD: 1, MID: 2, DEF: 2, GK: 1 };
-        const currentCount = user.lineup.filter(x => x.pos === p.pos).length;
-        if(currentCount >= limits[p.pos]) return alert("אין מקום בעמדה זו (" + p.pos + ")");
-        
-        user.lineup.push(user.collection.splice(idx, 1)[0]);
+    function moveToLineup(i) {
+        const p = user.collection[i];
+        const lim = {FWD:1, MID:2, DEF:2, GK:1};
+        if(user.lineup.filter(x=>x.pos===p.pos).length >= lim[p.pos]) return alert("מלא!");
+        user.lineup.push(user.collection.splice(i,1)[0]);
         save();
     }
-    function removeFromLineup(uId) {
-        const idx = user.lineup.findIndex(p => p.uId === uId);
-        user.collection.push(user.lineup.splice(idx, 1)[0]);
+    function removeFromLineup(id) {
+        const i = user.lineup.findIndex(x=>x.uId===id);
+        user.collection.push(user.lineup.splice(i,1)[0]);
         save();
     }
-    function moveToBench(idx) {
+    function moveToBench(i) {
         if(user.bench.length >= 7) return alert("ספסל מלא!");
-        user.bench.push(user.collection.splice(idx, 1)[0]);
+        user.bench.push(user.collection.splice(i,1)[0]);
         save();
     }
-    function removeFromBench(uId) {
-        const idx = user.bench.findIndex(p => p.uId === uId);
-        user.collection.push(user.bench.splice(idx, 1)[0]);
+    function removeFromBench(id) {
+        const i = user.bench.findIndex(x=>x.uId===id);
+        user.collection.push(user.bench.splice(i,1)[0]);
         save();
     }
 
-    // --- MATCH ENGINE ---
-    function startLeagueMatch() {
-        if(user.lineup.length < 6) return alert("צריך 6 שחקנים בהרכב כדי לשחק!");
-        if(user.energy < 2) return alert("אין מספיק אנרגיה!");
-        
-        user.energy -= 2; save();
-        
-        const overlay = document.getElementById('match-overlay');
-        const log = document.getElementById('match-log');
-        const kickoff = document.getElementById('kickoff-anim');
-        
-        overlay.style.display = 'flex';
-        log.innerHTML = "";
-        document.getElementById('m-home-score').innerText = "0";
-        document.getElementById('m-away-score').innerText = "0";
-        document.getElementById('btn-match-exit').style.display = 'none';
-
-        kickoff.style.display = 'block';
-        let count = 3;
-        const countInt = setInterval(() => {
-            count--;
-            kickoff.innerText = count > 0 ? count : "GO!";
-            if(count < 0) {
-                clearInterval(countInt);
-                kickoff.style.display = 'none';
-                runMatchLogic();
-            }
-        }, 800);
-    }
-
-    function runMatchLogic() {
-        let score = [0, 0];
-        let minute = 0;
-        const myPower = calculateOVR();
-        const botPower = Math.max(70, myPower + Math.floor(Math.random() * 10) - 5); // בוט דינאמי
-        document.getElementById('m-away-name').innerText = "RIVAL (" + botPower + ")";
-        const log = document.getElementById('match-log');
-
-        const gameLoop = setInterval(() => {
-            minute += 4; // משחק מהיר יותר
-            let chance = Math.random() * 100;
-
-            // My Attack
-            if(chance < (myPower / 3)) {
-                if(Math.random() > 0.6) {
-                    score[0]++;
-                    document.getElementById('m-home-score').innerText = score[0];
-                    const scorer = user.lineup[Math.floor(Math.random()*user.lineup.length)];
-                    log.innerHTML += `<div class="log-entry" style="color:var(--gold)">
-                        <span>⚽</span> <div><b>גול! (${minute}')</b> ${scorer.name}</div>
-                    </div>`;
-                } else {
-                    log.innerHTML += `<div class="log-entry" style="color:#94a3b8"><span>🧤</span> <div>הזדמנות הוחמצה...</div></div>`;
-                }
-            }
-
-            // Bot Attack
-            if(chance > 100 - (botPower / 3.5)) {
-                score[1]++;
-                document.getElementById('m-away-score').innerText = score[1];
-                log.innerHTML += `<div class="log-entry" style="color:var(--danger)"><span>🔻</span> <div>היריב הבקיע (${minute}')</div></div>`;
-            }
-
-            log.scrollTop = log.scrollHeight;
-
-            if(minute >= 90) {
-                clearInterval(gameLoop);
-                let reward = score[0] > score[1] ? 350 : (score[0] === score[1] ? 150 : 50);
-                user.coins += reward;
-                user.xp += score[0] > score[1] ? 100 : 20;
-                log.innerHTML += `<div style="text-align:center; padding:15px; background:var(--gold); color:#000; border-radius:10px; margin-top:10px; font-weight:800;">סיום! רווח: ${reward} 💰</div>`;
-                document.getElementById('btn-match-exit').style.display = 'block';
-                save();
-            }
-        }, 300);
-    }
-
-    function closeMatch() { document.getElementById('match-overlay').style.display = 'none'; }
-
-    // --- PACK SYSTEM UPDATED ---
+    // --- PACKS ---
     function buyPack(type) {
-        let cost, minR, maxR;
-        if (type === 'premium') { cost = 800; minR = 84; maxR = 99; }
-        else { cost = 250; minR = 75; maxR = 84; }
-
-        if(user.coins < cost) return alert("חסר לך כסף! עבוד קשה במשחקים!");
-        user.coins -= cost; 
-        
-        // יצירת השחקן
-        const pData = generateRandomPlayer(minR, maxR);
-        packTemp = {...pData, uId: "p_" + Date.now() + Math.random()};
-        
-        save();
-        
-        // UI
+        let cost = type === 'regular' ? 250 : 800;
+        if(user.coins < cost) return alert("אין מספיק כסף!");
+        user.coins -= cost;
+        packTemp = type === 'regular' ? generateRandomPlayer(75, 84) : generateRandomPlayer(84, 99);
         document.getElementById('pack-open').style.display = 'flex';
         document.getElementById('pack-result').style.display = 'none';
         document.getElementById('pack-obj').style.display = 'block';
-        document.getElementById('pack-obj').classList.remove('shaking');
-        isOpening = true;
     }
 
     function triggerReveal() {
-        if(!isOpening) return;
-        const obj = document.getElementById('pack-obj');
-        obj.classList.add('shaking');
-        
-        // רטט ואז חשיפה
-        setTimeout(() => {
-            obj.style.display = 'none';
-            document.getElementById('pack-result').style.display = 'block';
-            
-            const isElite = packTemp.rating >= 90;
-            const cardClass = isElite ? "card-pro elite" : "card-pro";
-            
-            document.getElementById('opened-card-container').innerHTML = `
-                <div class="${cardClass}" style="transform:scale(2.5); margin: 60px auto;">
-                    <div class="rating">${packTemp.rating}</div>
-                    <img src="${packTemp.img}">
-                    <div class="name">${packTemp.name}</div>
-                </div>`;
-            
-            document.getElementById('opened-player-name').innerText = packTemp.name;
-            if(isElite) {
-                // אפקט מיוחד לנדיר
-                document.getElementById('opened-player-name').style.textShadow = "0 0 20px gold";
-            } else {
-                document.getElementById('opened-player-name').style.textShadow = "none";
-            }
-
-            isOpening = false;
-        }, 1500);
-    }
-    
-    function confirmPack() { 
-        user.collection.push(packTemp); 
-        save(); 
-        document.getElementById('pack-open').style.display = 'none'; 
+        document.getElementById('pack-obj').style.display = 'none';
+        const res = document.getElementById('pack-result');
+        res.style.display = 'block';
+        document.getElementById('opened-card-container').innerHTML = `
+            <div class="card-pro elite" style="width:150px; height:210px; font-size:1.5rem;">
+                <div class="rating" style="font-size:1.5rem;">${packTemp.rating}</div>
+                <img src="${packTemp.img}" style="width:100px; height:100px; margin-top:20px;">
+                <div class="name" style="font-size:1.2rem; margin-top:15px;">${packTemp.name}</div>
+            </div>`;
     }
 
-    // --- MARKET & SOCIAL ---
-    function listOnMarket(idx) {
-        const price = prompt("בכמה למכור? (מספר בלבד)");
-        if(!price || isNaN(price) || price < 10) return;
-        const p = user.collection.splice(idx, 1)[0];
-        db.ref('market').push({ ...p, seller: myId, price: parseInt(price) });
+    function confirmPack() {
+        user.collection.push(packTemp);
         save();
+        document.getElementById('pack-open').style.display = 'none';
     }
-
-    function loadMarket() {
-        db.ref('market').limitToLast(50).once('value', snap => {
-            const grid = document.getElementById('market-grid');
-            grid.innerHTML = "";
-            const data = snap.val();
-            if(data) {
-                for(let key in data) {
-                    const p = data[key];
-                    if(p.seller !== myId) {
-                        grid.innerHTML += `<div class="inv-card">
-                            <img src="${p.img}" style="width:50px; border-radius:50%;">
-                            <h4>${p.name}</h4>
-                            <div style="font-size:0.8rem;">Rating: ${p.rating}</div>
-                            <div style="color:var(--gold); font-weight:bold; margin:5px;">${p.price} 💰</div>
-                            <button class="btn btn-gold" onclick="buyFromMarket('${key}', ${p.price})">קנה</button>
-                        </div>`;
-                    }
-                }
-            } else {
-                grid.innerHTML = "<p>השוק ריק כרגע...</p>";
-            }
-        });
-    }
-
-    function buyFromMarket(key, price) {
-        if(user.coins < price) return alert("אין לך מספיק מטבעות!");
-        
-        // טרנזקציה מורכבת למניעת קנייה כפולה
-        db.ref('market/' + key).transaction(currentData => {
-            if (currentData === null) return null; // כבר נקנה
-            return null; // מוחק מהשוק
-        }, (error, committed, snapshot) => {
-            if (error) {
-                alert('שגיאה בקנייה');
-            } else if (!committed) {
-                alert('השחקן כבר נמכר למישהו אחר!');
-                loadMarket();
-            } else {
-                // הצליח למחוק - עכשיו מעבירים בעלות
-                const p = snapshot.val();
-                user.coins -= price;
-                user.collection.push({...p, uId: "p_" + Date.now()});
-                
-                // תשלום למוכר
-                db.ref('users/' + p.seller + '/coins').transaction(c => (c||0) + price);
-                
-                save(); 
-                alert("תתחדש! השחקן אצלך."); 
-                loadMarket();
-            }
-        });
-    }
-
-    function loadSocial() {
-        db.ref('leaderboard').orderByChild('ovr').limitToLast(10).once('value', snap => {
-            const list = document.getElementById('leaderboard-list');
-            list.innerHTML = "";
-            let ranks = []; 
-            snap.forEach(c => ranks.push(c.val()));
-            ranks.reverse().forEach((u, i) => {
-                list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #334155;">
-                    <span>${i+1}. ${u.name}</span>
-                    <b style="color:var(--gold)">${u.ovr} OVR</b>
-                </div>`;
-            });
-        });
-    }
-
-    function sendChatMessage() {
-        const msg = document.getElementById('chat-input').value;
-        if(!msg) return;
-        const displayName = "Team " + myId.substring(0,4);
-        db.ref('chat').push({ name: displayName, msg: msg });
-        document.getElementById('chat-input').value = "";
-    }
-
-    db.ref('chat').limitToLast(15).on('child_added', snap => {
-        const c = snap.val();
-        const box = document.getElementById('chat-box');
-        box.innerHTML += `<div><b style="color:var(--accent)">${c.name}:</b> ${c.msg}</div>`;
-        box.scrollTop = box.scrollHeight;
-    });
 
     function claimDaily() {
-        user.coins += 500; 
-        user.lastDaily = Date.now(); 
+        user.coins += 500;
         save();
-        updateStatsUI();
         alert("קיבלת 500 מטבעות!");
     }
+
+    // --- MATCH (BASIC) ---
+    function startLeagueMatch() {
+        if(user.lineup.length < 6) return alert("הרכב חסר!");
+        document.getElementById('match-overlay').style.display = 'flex';
+        // לוגיקה פשוטה למשחק מהיר
+        setTimeout(() => {
+            document.getElementById('btn-match-exit').style.display = 'block';
+            document.getElementById('match-log').innerHTML = "המשחק הסתיים!";
+        }, 2000);
+    }
+    function closeMatch() { document.getElementById('match-overlay').style.display = 'none'; }
 </script>
+
 </body>
 </html>

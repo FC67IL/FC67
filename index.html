@@ -335,16 +335,37 @@
 
     // --- מערכת שחקנים גנרית + מיוחדים (תיקון החבילות) ---
     const specialPlayers = [
-        { name: "כושי אולטימייט", rating: 99, pos: "FWD", img: "https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless" },
-        { name: "ביגון הקיר", rating: 92, pos: "GK", img: "https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c305ea058d1047&=&format=webp" },
-        { name: "שרק הטורף", rating: 88, pos: "FWD", img: "https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp" },
-        { name: "דוד הבלם", rating: 86, pos: "DEF", img: "https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960" }
+const players = [
+    {name: "כושי", pos: "FWD", rating: 99, img: "https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"},
+    {name: "הביגון", pos: "GK", rating: 91, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
+    {name: "מר", pos: "FWD", rating: 91, img: "https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
+    {name: "איר", pos: "GK", rating: 90, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246090438443038/WhatsApp_Image_2025-12-18_at_12.56.32_9.jpeg?ex=694579be&is=6944283e&hm=dc12f06068dcbf4fcdd30f5bc9a638c9680f66e26040878e36b1c011c2580d5e&=&format=webp"},
+    {name: "שרק", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205099996053544/WhatsApp_Image_2025-12-18_at_12.56.32_2.jpeg?ex=69455391&is=69440211&hm=c6f342319b4cf7dd202ed669dd6c1bedca125616bd11d86555867a350147d586&=&format=webp"},
+    {name: "בום", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
+    {name: "קריסטל", pos: "MID", rating: 89, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
+    {name: "וויני", pos: "MID", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
+    {name: "יונתן_פדרי", pos: "MID", rating: 88, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
+    {name: "אור", pos: "FWD", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
+    {name: "דוד", pos: "DEF", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960"},
+    {name: "טוי", pos: "FWD", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
+    {name: "גבינה", pos: "MID", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336082552651776/VRFS__2025-12-18_18-35-31.jpg?ex=6945cd8e&is=69447c0e&hm=b23825cfe2af008d946eea0c607562b4fd0b6377b3f4167f731e617e30a1f67c&=&format=webp"},
+    {name: "שבותה", pos: "MID", rating: 86, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336624318320691/2025-12-19_001354.png?ex=6945ce0f&is=69447c8f&hm=627bec49930ba5e8d88d9b6e8974327936ba5e8ed3ccd6084dc4f5420f20fbe6&=&format=webp&quality=lossless"},
+    {name: "יאיא", pos: "FWD", rating: 86, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327661803831488/VRFS__2025-12-18_18-27-18.jpg?ex=6945c5b6&is=69447436&hm=7d74b821c4941f765db80ad8c1995eef2bb99784db86858d5c5932c4b3d986f0&=&format=webp"},
+    {name: "דרופיקס", pos: "FWD", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335844064657531/2025-12-19_001025.png?ex=6945cd55&is=69447bd5&hm=857282b63386835b860c775eb4920a0258fade2497bc9e7924395d5071285da3&=&format=webp&quality=lossless"},
+    {name: "עילאי", pos: "DEF", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
+    {name: "גולדי", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337038656966817/gold-1920w.webp?ex=6945ce72&is=69447cf2&hm=dfc3efac8e6073074fbe6f7a19c7badf1751e8acc33b55f77aa6e3e1ab38816d&=&format=webp"},
+    {name: "אקספרין", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"},
+    {name: "רין", pos: "FWD", rating: 82, img: "https://www.picshare.co.il/m_pictures/img153010.jpg"},
+    {name: "איירון", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
+    {name: "איתמר", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
+    {name: "טלקר", pos: "DEF", rating: 80, img: "https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
+    {name: "שף", pos: "FWD", rating: 78, img: "https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
+    {name: "בובו", pos: "DEF", rating: 77, img: "https://via.placeholder.com/100?text=BOBO"},
+    {name: "מיכאל", pos: "MID", rating: 77, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205100394516525/WhatsApp_Image_2025-12-18_at_12.56.32_1.jpeg?ex=6947f692&is=6946a512&hm=3b598439097a05dd423c39f1fdb1cd47b7a760ca25a0a927599a06de6b54d2db&=&format=webp"}
     ];
 
-    const firstNames = ["יוסי", "דני", "עמית", "רועי", "טל", "עידן", "מייקל", "ג'ון", "קרלוס", "פדרו"];
-    const lastNames = ["כהן", "לוי", "מזרחי", "פרץ", "סמית'", "גונזלס", "רודריגז", "אמבפה", "מסי", "רונאלדו"];
-    const positions = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"]; // משקל גבוה יותר לשחקני שדה
-
+const firstNames = ["כושי", "הביגון", "מר", "איר", "שרק", "בום", "קריסטל", "וויני", "יונתן", "אור", "דוד", "טוי", "גבינה", "שבותה", "יאיא", "דרופיקס", "עילאי", "גולדי", "אקספרין", "רין", "איירון", "איתמר", "טלקר", "שף", "בובו", "מיכאל"];
+const positions = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"]; // משקל גבוה יותר לשחקני שדה
     function generateRandomPlayer(minRating, maxRating) {
         // בודק אם להגריל שחקן מיוחד (סיכוי נמוך)
         if(Math.random() > 0.9 && maxRating > 88) {

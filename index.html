@@ -3,11 +3,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-    <title>FC67 ULTIMATE CHAMPIONS</title>
+    <title>FC67 ULTIMATE TEAM</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap');
@@ -15,12 +16,11 @@
         :root {
             --gold: #fcd34d;
             --gold-dark: #b45309;
-            --bg: #020617;
-            --card-bg: rgba(30, 41, 59, 0.85);
+            --bg: #0f172a;
+            --card-bg: #1e293b;
             --accent: #38bdf8;
             --danger: #ef4444;
             --success: #22c55e;
-            --glass: rgba(255, 255, 255, 0.08);
         }
 
         * { box-sizing: border-box; font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
@@ -28,312 +28,226 @@
         body { 
             margin: 0; 
             background: var(--bg); 
-            background-image: radial-gradient(circle at top right, #172554, transparent), radial-gradient(circle at bottom left, #312e81, transparent);
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b, var(--bg));
             color: #f1f5f9; 
             padding-bottom: 90px; 
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         /* --- HEADER --- */
         .header { 
-            background: rgba(2, 6, 23, 0.9);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.95);
             padding: 12px 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid #334155;
             position: sticky; top: 0; z-index: 2000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
+        .header h1 { margin: 0; font-size: 1.2rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        .currency { background: #334155; padding: 5px 12px; border-radius: 20px; font-weight: bold; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; border: 1px solid #475569; }
 
-        .team-info h1 { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--gold); text-shadow: 0 0 15px rgba(252, 211, 77, 0.4); }
-        .stats-bar { display: flex; gap: 8px; margin-top: 4px; font-size: 0.85rem; font-weight: 600; }
-        .currency { background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 5px; }
-
-        /* --- NAVIGATION --- */
+        /* --- NAV --- */
         .nav-bar { 
-            display: flex; 
-            background: #0f172a;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; background: #1e293b; border-top: 1px solid #334155;
             position: fixed; bottom: 0; width: 100%; z-index: 1000;
             padding-bottom: env(safe-area-inset-bottom);
         }
         .nav-btn { 
-            flex: 1; padding: 12px; border: none; background: none; 
-            color: #64748b; font-size: 0.75rem; font-weight: 700; cursor: pointer; 
+            flex: 1; padding: 10px; border: none; background: none; 
+            color: #64748b; font-size: 0.7rem; font-weight: bold; 
             display: flex; flex-direction: column; align-items: center; gap: 4px;
-            transition: 0.2s;
         }
-        .nav-btn i { font-size: 1.2rem; margin-bottom: 2px; }
-        .nav-btn.active { color: var(--gold); text-shadow: 0 0 10px rgba(252, 211, 77, 0.3); }
+        .nav-btn i { font-size: 1.4rem; }
+        .nav-btn.active { color: var(--gold); background: rgba(255,255,255,0.05); }
 
         /* --- TABS --- */
-        .tab { display: none; padding: 15px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+        .tab { display: none; padding: 15px; max-width: 600px; margin: 0 auto; animation: fadeUp 0.3s ease; }
         .tab.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PITCH & CARDS --- */
-        .pitch-container {
-            background: #064e3b;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.1) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(255,255,255,0.1) 2px, transparent 2px);
-            background-size: 100px 100px;
-            border: 4px solid rgba(255,255,255,0.2);
-            border-radius: 16px;
-            padding: 20px 0;
-            position: relative;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
-            margin-bottom: 20px;
-        }
-        
-        .pitch-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; height: 100px; }
-        
-        .card-slot {
-            width: 75px; height: 105px;
-            border: 2px dashed rgba(255,255,255,0.2);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: rgba(255,255,255,0.2); font-size: 0.9rem;
-        }
-
+        /* --- CARDS --- */
         .player-card {
-            width: 75px; height: 105px;
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-            border: 2px solid #475569;
-            border-radius: 8px;
-            position: relative;
+            width: 80px; height: 110px;
+            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+            border: 2px solid #64748b;
+            border-radius: 8px; position: relative;
             display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            cursor: pointer; transition: transform 0.1s;
-            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer; overflow: hidden; transition: transform 0.1s;
         }
         .player-card:active { transform: scale(0.95); }
         
-        /* Elite Card Style (88+) */
+        /* Gold Card */
+        .player-card[data-rating="gold"] {
+            background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%);
+            border-color: #f59e0b;
+        }
+        /* Elite Card (88+) */
         .player-card.elite {
-            border-color: var(--gold);
-            background: linear-gradient(135deg, #451a03 0%, #b45309 50%, #451a03 100%);
-            box-shadow: 0 0 10px rgba(252, 211, 77, 0.4);
+            background: linear-gradient(135deg, #000 0%, #451a03 100%);
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 15px rgba(252, 211, 77, 0.5);
         }
-        .player-card.elite::after {
-            content:''; position: absolute; top:0; left:0; right:0; bottom:0;
-            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
-            animation: shine 3s infinite;
+        .player-card.elite::before {
+            content:''; position: absolute; inset:0; 
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 2s infinite;
         }
-        @keyframes shine { 0% { transform: translateX(-100%); } 20% { transform: translateX(100%); } 100% { transform: translateX(100%); } }
+        @keyframes shine { 0% {transform: translateX(-100%);} 100% {transform: translateX(100%);} }
 
-        .card-rating { position: absolute; top: 2px; left: 4px; font-weight: 900; font-size: 0.9rem; color: #fff; z-index: 2; text-shadow: 1px 1px 0 #000; }
-        .card-pos { position: absolute; top: 16px; left: 4px; font-size: 0.6rem; font-weight: 700; color: #cbd5e1; z-index: 2; }
-        .card-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-top: 15px; border: 2px solid rgba(255,255,255,0.1); background: #000; z-index: 1;}
-        .card-name { font-size: 0.65rem; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; font-weight: 700; margin-top: 6px; padding: 2px; background: rgba(0,0,0,0.4); color: #fff; z-index: 2;}
+        .card-rating { position: absolute; top: 2px; left: 5px; font-weight: 900; font-size: 1rem; color: #1e293b; z-index: 2; }
+        .elite .card-rating { color: #fcd34d; }
+        .card-pos { position: absolute; top: 18px; left: 5px; font-size: 0.7rem; font-weight: bold; color: #334155; z-index: 2; }
+        .elite .card-pos { color: #ccc; }
+        .card-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-top: 15px; border: 2px solid rgba(255,255,255,0.2); background:#000; z-index: 1; }
+        .card-name { font-size: 0.7rem; width: 100%; text-align: center; background: rgba(0,0,0,0.6); color: #fff; padding: 2px 0; margin-top: auto; font-weight: bold; z-index: 2; white-space: nowrap; overflow: hidden; }
 
-        /* --- UI COMPONENTS --- */
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;}
-        .btn-gold { background: linear-gradient(to bottom, #fcd34d, #f59e0b); color: #451a03; box-shadow: 0 4px 0 #b45309; }
-        .btn-gold:active { transform: translateY(4px); box-shadow: none; }
-        .btn-blue { background: var(--accent); color: #0f172a; box-shadow: 0 4px 0 #0284c7; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; padding-bottom: 20px; }
-        
-        /* --- MATCH SCREEN --- */
-        #match-overlay {
-            position: fixed; inset: 0; background: #020617; z-index: 5000;
-            display: none; flex-direction: column; align-items: center; padding: 20px;
+        /* --- PITCH --- */
+        .pitch {
+            background: #064e3b;
+            background-image: linear-gradient(transparent 95%, rgba(255,255,255,0.2) 95%), linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.2) 95%);
+            background-size: 20px 20px;
+            border: 3px solid #34d399; border-radius: 12px;
+            padding: 20px 0; min-height: 450px;
+            display: flex; flex-direction: column; justify-content: space-around;
+            box-shadow: inset 0 0 40px #022c22;
         }
-        .scoreboard { 
-            display: flex; width: 100%; justify-content: space-between; align-items: center;
-            background: #1e293b; padding: 15px 25px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #334155;
+        .pitch-row { display: flex; justify-content: center; gap: 15px; }
+        .empty-slot {
+            width: 80px; height: 110px;
+            border: 2px dashed rgba(255,255,255,0.3); border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
+            color: rgba(255,255,255,0.3); font-weight: bold;
         }
-        .score { font-size: 3rem; font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; }
-        .log-box {
-            flex: 1; width: 100%; background: rgba(0,0,0,0.3); border-radius: 12px;
-            overflow-y: auto; padding: 15px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.05);
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .log-item { padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); animation: slideIn 0.3s; }
-        .log-item.goal { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); }
-        .log-item.miss { background: rgba(239, 68, 68, 0.1); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } }
 
         /* --- PACK OPENING --- */
         #pack-overlay {
-            position: fixed; inset: 0; background: #000; z-index: 6000;
+            position: fixed; inset: 0; background: #000; z-index: 5000;
             display: none; align-items: center; justify-content: center; flex-direction: column;
         }
-        .pack-wrap { width: 220px; height: 320px; perspective: 1000px; cursor: pointer; }
-        .pack-inner {
-            position: relative; width: 100%; height: 100%; text-align: center;
-            transition: transform 0.8s; transform-style: preserve-3d;
+        .pack {
+            width: 200px; height: 300px;
+            background: linear-gradient(45deg, #b45309, #fbbf24);
+            border: 4px solid #fff; border-radius: 16px;
+            box-shadow: 0 0 50px var(--gold);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 4rem;
         }
-        .pack-inner.flipped { transform: rotateY(180deg); }
-        .pack-front, .pack-back {
-            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden;
-            border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-direction: column;
-        }
-        .pack-front { background: linear-gradient(135deg, #b45309, #fcd34d); border: 4px solid #fff; box-shadow: 0 0 50px var(--gold); }
-        .pack-back { background: transparent; transform: rotateY(180deg); }
-        
-        .big-card { width: 200px; height: 280px; font-size: 1.5rem; }
-        .big-card .card-img { width: 100px; height: 100px; }
+        .pack.shaking { animation: shake 0.5s infinite; }
+        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
 
-        /* --- LOADING --- */
-        #loader { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .loader-spinner { width: 40px; height: 40px; border: 4px solid var(--gold); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* --- MARKET & GRID --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; padding-bottom: 20px; }
+        .market-item { background: #1e293b; padding: 10px; border-radius: 10px; border: 1px solid #334155; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        
+        .btn { border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; }
+        .btn-green { background: var(--success); color: #064e3b; }
+        .btn-red { background: var(--danger); color: white; }
+        .btn-blue { background: var(--accent); color: #0f172a; }
+        .btn-gold { background: var(--gold); color: #451a03; }
+
+        /* --- MODAL --- */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 4000; display: none; align-items: center; justify-content: center; }
+        .modal-content { background: #1e293b; padding: 20px; border-radius: 16px; width: 90%; max-width: 320px; text-align: center; border: 1px solid #475569; }
 
     </style>
 </head>
 <body>
 
-<div id="loader">
-    <h1 style="color:var(--gold); font-size:3rem; margin-bottom: 20px;">FC67</h1>
-    <div class="loader-spinner"></div>
-    <p style="margin-top: 15px; color: #64748b;">מתחבר לשרתים...</p>
-</div>
-
 <div class="header">
-    <div class="team-info">
-        <h1>FC67 TEAM</h1>
-        <div class="stats-bar">
-            <div class="currency" style="color: #a855f7;">⭐ <span id="xp-display">1</span></div>
-            <div class="currency" style="color: #22c55e;">⚡ <span id="energy-display">10</span>/10</div>
-        </div>
+    <div class="currency">
+        <span>⚽</span> <span id="club-name">My Club</span>
     </div>
-    <div class="currency" style="background: rgba(251, 191, 36, 0.2); border-color: var(--gold); color: var(--gold); padding: 8px 15px; font-size: 1rem;">
-        <span id="coins-display">0</span> 💰
+    <div style="display:flex; gap:10px;">
+        <div class="currency" style="color:#a855f7;">⭐ <span id="lvl-display">1</span></div>
+        <div class="currency" style="color:var(--gold); border-color:var(--gold);">💰 <span id="coins-display">0</span></div>
     </div>
 </div>
 
 <div id="tab-club" class="tab active">
-    <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-        <h3>ההרכב הפותח</h3>
-        <div style="background:#0f172a; padding:5px 12px; border-radius:10px; font-size:0.8rem; border:1px solid #334155;">
-            כימיה: <span id="chem-display" style="color:var(--success); font-weight:bold;">0</span>%
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="margin:0;">ההרכב שלי</h2>
+        <div style="background:#0f172a; padding:5px 10px; border-radius:8px; font-size:0.8rem; border:1px solid #333;">
+            כימיה: <span id="chem-display" style="color:var(--success);">0</span>%
         </div>
     </div>
 
-    <div class="pitch-container" id="pitch-ui">
+    <div class="pitch" id="pitch-container">
         </div>
-
-    <h3>ספסל הקבוצה</h3>
-    <div id="bench-ui" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; min-height:120px;">
+    
+    <h3 style="margin-top:20px;">ספסל</h3>
+    <div id="bench-container" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; min-height: 120px;">
         </div>
+</div>
 
-    <button class="btn btn-gold" style="margin-top: 20px; height: 60px; font-size: 1.3rem;" onclick="playMatch()">
-        ⚽ שחק משחק ליגה (2 ⚡)
-    </button>
+<div id="tab-market" class="tab">
+    <div style="background:#1e293b; padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid #334155;">
+        <h2 style="margin:0; color:var(--success);">שוק ההעברות 🌍</h2>
+        <p style="font-size:0.8rem; color:#94a3b8; margin:5px 0;">השוק מתרענן כל 30 שניות באופן אוטומטי.</p>
+    </div>
+    <div id="market-grid" class="grid">
+        </div>
 </div>
 
 <div id="tab-store" class="tab">
-    <h2 style="text-align:center;">חנות החבילות 🛒</h2>
+    <h2 style="text-align:center;">חנות חבילות 🛒</h2>
     <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top:20px;">
-        <div style="background:var(--card-bg); border:1px solid #334155; border-radius:16px; padding:15px; text-align:center; display:flex; flex-direction:column; align-items:center;">
-            <div style="font-size:3rem; margin-bottom:10px;">📦</div>
-            <h3 style="margin:0;">חבילת בסיס</h3>
-            <p style="font-size:0.8rem; color:#94a3b8;">שחקנים 75-85</p>
-            <button class="btn btn-blue" onclick="buyPack('basic')">250 💰</button>
+        <div class="market-item">
+            <div style="font-size:3rem;">📦</div>
+            <h3>חבילת ארד</h3>
+            <p style="font-size:0.8rem; color:#94a3b8;">שחקנים 75+</p>
+            <button class="btn btn-blue" onclick="buyPack('basic')">300 💰</button>
         </div>
-        <div style="background: linear-gradient(to bottom right, #451a03, #1e1b4b); border:1px solid var(--gold); border-radius:16px; padding:15px; text-align:center; display:flex; flex-direction:column; align-items:center;">
-            <div style="font-size:3rem; margin-bottom:10px;">🌟</div>
-            <h3 style="margin:0; color:var(--gold);">חבילת זהב</h3>
+        <div class="market-item" style="border-color:var(--gold); background: linear-gradient(135deg, #451a03, #172554);">
+            <div style="font-size:3rem;">🌟</div>
+            <h3 style="color:var(--gold);">חבילת אולטימייט</h3>
             <p style="font-size:0.8rem; color:#cbd5e1;">שחקנים 84-99</p>
-            <button class="btn btn-gold" onclick="buyPack('premium')">800 💰</button>
+            <button class="btn btn-gold" onclick="buyPack('premium')">1000 💰</button>
         </div>
     </div>
-    
-    <div style="background:#1e293b; border-radius:16px; padding:20px; margin-top:20px; text-align:center;">
-        <h3>בונוס יומי</h3>
-        <p>קבל מטבעות חינם בכל יום!</p>
-        <button class="btn btn-blue" onclick="claimBonus()">אסוף 500 💰</button>
+    <div style="margin-top:20px; background:#1e293b; padding:15px; border-radius:12px; text-align:center;">
+        <h3>חסר כסף?</h3>
+        <button class="btn btn-green" onclick="watchAd()">צפה בפרסומת (+100 💰)</button>
     </div>
 </div>
 
 <div id="tab-collection" class="tab">
-    <h3>האוסף שלי (<span id="coll-count">0</span>)</h3>
+    <h3>השחקנים שלי (<span id="coll-count">0</span>)</h3>
     <div id="collection-grid" class="grid"></div>
-</div>
-
-<div id="tab-social" class="tab">
-    <div style="background:#1e293b; border-radius:16px; padding:20px; margin-bottom:20px; text-align:center;">
-        <h2 style="color:var(--gold);">🏆 טבלת המנצחים</h2>
-        <div style="text-align:right; margin-top:15px;">
-            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                <span>1. המלך1</span> <span>LVL 50</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                <span>2. אלוף_עולם</span> <span>LVL 45</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.05);">
-                <span>3. אתה</span> <span id="my-lvl-rank">LVL 1</span>
-            </div>
-        </div>
-    </div>
-    
-    <h3>💬 צ'אט הקבוצה</h3>
-    <div id="chat-window" style="height:200px; background:#000; border-radius:12px; padding:10px; overflow-y:auto; border:1px solid #333;">
-        <div style="font-size:0.8rem; color:#666;">המערכת: ברוך הבא לצ'אט FC67!</div>
-    </div>
-    <div style="display:flex; gap:10px; margin-top:10px;">
-        <input type="text" id="chat-in" placeholder="כתוב הודעה..." style="flex:1; background:#1e293b; border:none; padding:10px; border-radius:8px; color:#fff;">
-        <button class="btn btn-blue" style="width:80px; margin-top:0;" onclick="sendChat()">שלח</button>
-    </div>
 </div>
 
 <div class="nav-bar">
     <button class="nav-btn active" onclick="switchTab('club', this)"><span>⚽</span>מועדון</button>
-    <button class="nav-btn" onclick="switchTab('collection', this)"><span>🗂️</span>אוסף</button>
+    <button class="nav-btn" onclick="switchTab('market', this)"><span>🌍</span>שוק</button>
     <button class="nav-btn" onclick="switchTab('store', this)"><span>🛒</span>חנות</button>
-    <button class="nav-btn" onclick="switchTab('social', this)"><span>🌍</span>קהילה</button>
-</div>
-
-<div id="match-overlay">
-    <div style="text-align:center; margin-bottom:10px; font-weight:bold; font-size:1.2rem; color:#94a3b8;">דקה <span id="match-timer">0</span></div>
-    <div class="scoreboard">
-        <div>
-            <div style="font-size:0.8rem; color:#94a3b8;">אנחנו</div>
-            <div class="score" id="score-home">0</div>
-        </div>
-        <div style="font-size:1.5rem; color:#475569; font-weight:800;">VS</div>
-        <div>
-            <div style="font-size:0.8rem; color:#94a3b8;">יריב</div>
-            <div class="score" id="score-away">0</div>
-        </div>
-    </div>
-    <div class="log-box" id="match-log"></div>
-    <button id="end-match-btn" class="btn btn-gold" style="display:none; margin-top:20px;" onclick="closeMatch()">חזור למועדון</button>
+    <button class="nav-btn" onclick="switchTab('collection', this)"><span>📚</span>אוסף</button>
 </div>
 
 <div id="pack-overlay">
-    <div class="pack-wrap" onclick="openPackAnim()">
-        <div class="pack-inner" id="pack-card-inner">
-            <div class="pack-front">
-                <div style="font-size:4rem;">🧧</div>
-                <h2>לחץ לפתיחה!</h2>
-            </div>
-            <div class="pack-back">
-                <div id="new-card-display"></div> <button class="btn btn-gold" style="position:absolute; bottom:-60px;" onclick="closePack()">שמור במועדון</button>
-            </div>
+    <div id="pack-obj" class="pack" onclick="openPackAnim()">
+        🧧
+    </div>
+    <div id="pack-reveal" style="display:none; text-align:center;">
+        <div id="new-card-container" style="transform: scale(1.5); margin-bottom: 50px;"></div>
+        <h1 id="walkout-text" style="color:var(--gold); display:none; animation: pulse 0.5s infinite;">WALKOUT!!!</h1>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="btn btn-green" style="width:120px;" onclick="storeNewCard()">שמור במועדון</button>
+            <button class="btn btn-red" style="width:120px;" id="pack-qs-btn" onclick="quickSellNewCard()">Quick Sell</button>
         </div>
+    </div>
+</div>
+
+<div id="action-modal" class="modal-bg" onclick="closeModal(event)">
+    <div class="modal-content">
+        <h3 id="modal-title">אפשרויות שחקן</h3>
+        <div id="modal-actions"></div>
+        <button class="btn btn-blue" style="margin-top:10px;" onclick="document.getElementById('action-modal').style.display='none'">ביטול</button>
     </div>
 </div>
 
 <script>
-    // --- DATABASE CONFIG ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyDAyQfRIPiJO2pENF4AF9LDWTjyLeOrQNY",
-        authDomain: "fc67-3de49.firebaseapp.com",
-        databaseURL: "https://fc67-3de49-default-rtdb.firebaseio.com/",
-        projectId: "fc67-3de49",
-        storageBucket: "fc67-3de49.firebasestorage.app",
-        messagingSenderId: "484648478424",
-        appId: "1:484648478424:web:dfd4899b7477cc83f699ad"
-    };
-
-    // --- GAME DATA ---
-    const SPECIAL_PLAYERS = [
+    // --- DATA ---
+    const PLAYERS_DB = [
         {name: "כושי", pos: "FWD", rating: 99, img: "https://media.discordapp.net/attachments/1451328561226190929/1451339056314323075/31.png?ex=6945d053&is=69447ed3&hm=66d396730758c8df38e124c4776bc567ac3450a81c395b6d819989d0eb9dab25&=&format=webp&quality=lossless"},
         {name: "הביגון", pos: "GK", rating: 91, img: "https://media.discordapp.net/attachments/1406648962458583241/1451205336177447095/WhatsApp_Image_2025-12-18_at_12.56.32_4.jpeg?ex=694553ca&is=6944024a&hm=d7bde1489a098c2b7d54403feed38fcf330e50bb43b35988c3d305ea058d1047&=&format=webp"},
         {name: "מר", pos: "FWD", rating: 91, img: "https://media.discordapp.net/attachments/1451328561226190929/1451328868509286540/2025-12-08_140832.png?ex=6945c6d6&is=69447556&hm=780d4d9f15f33e8190e07422646c6a1412a8edee99a74c1107fba0abef3422cd&=&format=webp&quality=lossless"},
@@ -342,7 +256,7 @@
         {name: "בום", pos: "FWD", rating: 89, img: "https://media.discordapp.net/attachments/1406648962458583241/1451246385209938000/WhatsApp_Image_2025-12-18_at_12.56.32_10.jpeg?ex=69457a05&is=69442885&hm=2df987073db7e8828f3bf830b4090b03ea5bc72e1af70ded38a4946e1e69f189&=&format=webp"},
         {name: "קריסטל", pos: "MID", rating: 89, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337301178449940/71ezEUPrzPL._AC_UF8941000_QL80_.jpg?ex=6945ceb1&is=69447d31&hm=d5cc4385a9a5aa417c976669dd4329c2969580209ea4da6caf4bec1cd7b7f264&=&format=webp&width=770&height=960"},
         {name: "וויני", pos: "MID", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335757045170378/2025-12-19_001003.png?ex=6945cd40&is=69447bc0&hm=2c7fcc4d7ba2af243696f64f9d92d2d592f4878033e2d7dc3007e8ea7086157b&=&format=webp&quality=lossless"},
-        {name: "יונתן_פדרי", pos: "MID", rating: 88, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
+        {name: "יונתן", pos: "MID", rating: 88, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vfEEelp7ot4nSWqrl3sSabqDGdiNrfHHkVjx2kqURccMwCMBbi8kSqfVHlmnTkwMgOczQgQ40RUqtIaw1sx6KVYo79keTIutrmPF9Q&s=10"},
         {name: "אור", pos: "FWD", rating: 88, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336872570912868/VRFS__2025-12-18_18-35-06.jpg?ex=6945ce4a&is=69447cca&hm=efd9c19eb03d8ff2faff6c6a784caa2deec7c6e4ddd58eeb9e8ca8359492ffef&=&format=webp"},
         {name: "דוד", pos: "DEF", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451335794391519362/F145A669-C121-481E-B783-A929A4CD439C.png?ex=6945cd49&is=69447bc9&hm=71191ea135eac1845052f68445f1ecc4336cda64e085f43497ad56d9b9f1a7e6&=&format=webp&quality=lossless&width=640&height=960"},
         {name: "טוי", pos: "FWD", rating: 87, img: "https://media.discordapp.net/attachments/1451328561226190929/1451336172772261888/2024-07-05_180537.png?ex=6945cda4&is=69447c24&hm=476cc10a15cff4b0dccc5b9d24c65192b82a4ed518e2d18ea69f61135f5800ad&=&format=webp&quality=lossless"},
@@ -353,36 +267,44 @@
         {name: "עילאי", pos: "DEF", rating: 85, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337583459041330/2025-04-26_211815.png?ex=6945cef4&is=69447d74&hm=df4b886341747941d96ff1071387f6869c62548219566e76653467df881324c3&=&format=webp&quality=lossless"},
         {name: "גולדי", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1451328561226190929/1451337038656966817/gold-1920w.webp?ex=6945ce72&is=69447cf2&hm=dfc3efac8e6073074fbe6f7a19c7badf1751e8acc33b55f77aa6e3e1ab38816d&=&format=webp"},
         {name: "אקספרין", pos: "MID", rating: 84, img: "https://media.discordapp.net/attachments/1406648962458583241/1451326969970032650/VRFS__2025-12-18_18-37-35.jpg?ex=6945c511&is=69447391&hm=51b074b852cc68c4741c2a4ee92cd2627e01cc9f7d70e5795e17ab9ff9893e01&=&format=webp"},
-        {name: "רין", pos: "FWD", rating: 82, img: "https://www.picshare.co.il/m_pictures/img153010.jpg"},
-        {name: "איירון", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327490663645375/VRFS__2025-12-18_18-34-54.jpg?ex=6945c58e&is=6944740e&hm=ee3bf9d6b88b775606e35b2da96e11ed5e4a0941ad513a4ea69ac2fd63e48ad7&=&format=webp"},
         {name: "איתמר", pos: "MID", rating: 81, img: "https://media.discordapp.net/attachments/1406648962458583241/1451327221640855643/VRFS__2025-12-18_18-27-10.jpg?ex=6945c54d&is=694473cd&hm=5f572350ff5df69a6f47299b059499482d959a853c6161f0bd00e4221f4a9903&=&format=webp"},
         {name: "טלקר", pos: "DEF", rating: 80, img: "https://media.discordapp.net/attachments/1406648962458583241/1451245787190263940/WhatsApp_Image_2025-12-18_at_12.56.32_7.jpeg?ex=69457976&is=694427f6&hm=eda130bd359c11e59843bbd06c05472bb2515e1001c49bd9821a24fea6365107&=&format=webp"},
-        {name: "שף", pos: "FWD", rating: 78, img: "https://img.haarets.co.il/bs/0000017f-e4fb-d9aa-afff-fdfb1ea10000/a0/99/0d962fda57d52105c21aa95ce50b/3983304382.jpg"},
         {name: "בובו", pos: "DEF", rating: 77, img: "https://taoos.co.il/product/%D7%90%D7%99%D7%A9-%D7%A9%D7%9C%D7%92-%D7%9E%D7%97%D7%9C%D7%99%D7%A7-%D7%A2%D7%9C-%D7%A7%D7%A8%D7%97-%D7%9B%D7%95%D7%91%D7%A2-%D7%9B%D7%97%D7%95%D7%9C/"},
         {name: "מיכאל", pos: "MID", rating: 77, img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"}
     ];
+
+    const GENERIC_NAMES = ["רוני", "דני", "יוסי", "גיל", "נועם", "אלון"];
     const POSITIONS = ["GK", "DEF", "MID", "FWD"];
+
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDAyQfRIPiJO2pENF4AF9LDWTjyLeOrQNY",
+        authDomain: "fc67-3de49.firebaseapp.com",
+        databaseURL: "https://fc67-3de49-default-rtdb.firebaseio.com/",
+        projectId: "fc67-3de49",
+        storageBucket: "fc67-3de49.firebasestorage.app",
+        messagingSenderId: "484648478424",
+        appId: "1:484648478424:web:dfd4899b7477cc83f699ad"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
 
     // --- STATE ---
     let user = {
-        coins: 1000,
-        energy: 10,
-        xp: 0,
+        coins: 1500,
         lvl: 1,
-        lineup: [], // Max 6
+        lineup: [],
         bench: [],
         collection: []
     };
     let myId = null;
     let tempPackCard = null;
+    let marketInterval = null;
+    let marketItems = [];
 
     // --- INIT ---
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
-
-    auth.signInAnonymously().catch(e => alert("Error: " + e.message));
-
+    auth.signInAnonymously();
     auth.onAuthStateChanged(u => {
         if(u) {
             myId = u.uid;
@@ -394,94 +316,82 @@
                     if(!user.bench) user.bench = [];
                     if(!user.collection) user.collection = [];
                 } else {
-                    // New user starter pack
-                    for(let i=0; i<6; i++) user.collection.push(createRandomPlayer(70, 80));
+                    // Starter Pack
+                    for(let i=0; i<5; i++) user.collection.push(createRandomPlayer(75, 80));
                     saveUser();
                 }
                 updateUI();
-                document.getElementById('loader').style.display = 'none';
             });
         }
     });
 
-    function saveUser() {
-        db.ref('users/' + myId).set(user);
-    }
+    function saveUser() { db.ref('users/' + myId).set(user); }
 
-    // --- GAME LOGIC ---
+    // --- GENERATORS ---
     function createRandomPlayer(min, max) {
-        // 15% chance for special player if in range
-        if(Math.random() < 0.20) {
-            const potential = SPECIAL_PLAYERS.filter(p => p.rating >= min && p.rating <= max);
-            if(potential.length > 0) {
-                const p = potential[Math.floor(Math.random() * potential.length)];
-                return {...p, uid: Date.now() + Math.random().toString()};
+        // 30% chance from DB
+        if(Math.random() < 0.3) {
+            const potential = PLAYERS_DB.filter(p => p.rating >= min && p.rating <= max);
+            if(potential.length) {
+                const p = potential[Math.floor(Math.random()*potential.length)];
+                return {...p, uid: Date.now()+Math.random().toString()};
             }
         }
-        // Generate Generic
-        const name = GENERIC_NAMES[Math.floor(Math.random() * GENERIC_NAMES.length)];
-        const rating = Math.floor(Math.random() * (max - min + 1)) + min;
-        const pos = POSITIONS[Math.floor(Math.random() * POSITIONS.length)];
+        // Generic
+        const name = GENERIC_NAMES[Math.floor(Math.random()*GENERIC_NAMES.length)];
+        const rating = Math.floor(Math.random()*(max-min+1))+min;
+        const pos = POSITIONS[Math.floor(Math.random()*POSITIONS.length)];
         const img = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name+rating}&backgroundColor=e5e7eb`;
-        return {name, rating, pos, img, uid: Date.now() + Math.random().toString()};
+        return {name, rating, pos, img, uid: Date.now()+Math.random().toString()};
     }
 
+    // --- UI RENDER ---
     function updateUI() {
-        // Header
         document.getElementById('coins-display').innerText = user.coins;
-        document.getElementById('energy-display').innerText = user.energy;
-        document.getElementById('xp-display').innerText = user.lvl;
-        document.getElementById('my-lvl-rank').innerText = "LVL " + user.lvl;
+        document.getElementById('lvl-display').innerText = user.lvl;
 
-        // Lineup (4-2 Formation style visualization for 6 players: 1 GK, 2 DEF, 2 MID, 1 FWD)
-        const pitch = document.getElementById('pitch-ui');
+        // Lineup (1 GK, 2 DEF, 2 MID, 1 FWD)
+        const pitch = document.getElementById('pitch-container');
         pitch.innerHTML = '';
-        
-        // Define Slots
-        const layout = [
-            {p:'FWD', count:1},
-            {p:'MID', count:2},
-            {p:'DEF', count:2},
-            {p:'GK', count:1}
+        const formation = [
+            {pos:'FWD', count:1},
+            {pos:'MID', count:2},
+            {pos:'DEF', count:2},
+            {pos:'GK', count:1}
         ];
 
-        layout.forEach(row => {
+        formation.forEach(row => {
             const rowDiv = document.createElement('div');
             rowDiv.className = 'pitch-row';
-            const rowPlayers = user.lineup.filter(p => p.pos === row.p);
-            
-            for(let i=0; i < row.count; i++) {
-                const player = rowPlayers[i];
-                if(player) {
-                    rowDiv.innerHTML += renderCardHTML(player, `removeFromLineup('${player.uid}')`);
+            const playersInPos = user.lineup.filter(p => p.pos === row.pos);
+            for(let i=0; i<row.count; i++) {
+                if(playersInPos[i]) {
+                    rowDiv.innerHTML += renderCard(playersInPos[i], `handleLineupClick('${playersInPos[i].uid}')`);
                 } else {
-                    rowDiv.innerHTML += `<div class="card-slot">${row.p}</div>`;
+                    rowDiv.innerHTML += `<div class="empty-slot">${row.pos}</div>`;
                 }
             }
             pitch.appendChild(rowDiv);
         });
 
-        // Chem logic (Simple)
-        const chem = Math.floor((user.lineup.length / 6) * 100);
-        document.getElementById('chem-display').innerText = chem;
-
         // Bench
-        document.getElementById('bench-ui').innerHTML = user.bench.map(p => renderCardHTML(p, `moveToLineupFromBench('${p.uid}')`)).join('');
-
+        document.getElementById('bench-container').innerHTML = user.bench.map(p => renderCard(p, `handleBenchClick('${p.uid}')`)).join('');
+        
         // Collection
         document.getElementById('coll-count').innerText = user.collection.length;
-        document.getElementById('collection-grid').innerHTML = user.collection.map((p, idx) => `
-            <div style="text-align:center;">
-                ${renderCardHTML(p, '')}
-                <button class="btn btn-blue" style="padding:5px; font-size:0.7rem; margin-top:5px;" onclick="addToTeam(${idx})">לסגל</button>
-                <button class="btn btn-gold" style="padding:5px; font-size:0.7rem; margin-top:2px; background:#ef4444; color:white; box-shadow:none;" onclick="quickSell(${idx})">מכור (${p.rating*10})</button>
-            </div>
-        `).join('');
+        document.getElementById('collection-grid').innerHTML = user.collection.map(p => renderCard(p, `handleCollectionClick('${p.uid}')`)).join('');
+        
+        // Chemistry
+        const chem = Math.round((user.lineup.length / 6) * 100);
+        document.getElementById('chem-display').innerText = chem;
     }
 
-    function renderCardHTML(p, onclick) {
+    function renderCard(p, onclick) {
+        const isElite = p.rating >= 88;
+        const isGold = p.rating >= 80 && p.rating < 88;
         return `
-        <div class="player-card ${p.rating >= 88 ? 'elite' : ''}" onclick="${onclick}">
+        <div class="player-card ${isElite?'elite':''} ${p.uid === 'market' ? 'market-preview' : ''}" 
+             data-rating="${isGold?'gold':''}" onclick="${onclick}">
             <div class="card-rating">${p.rating}</div>
             <div class="card-pos">${p.pos}</div>
             <img src="${p.img}" class="card-img">
@@ -489,195 +399,218 @@
         </div>`;
     }
 
-    // --- LINEUP MANAGEMENT ---
-    function addToTeam(collIdx) {
-        const p = user.collection[collIdx];
-        
-        // Constraints
-        const currentInPos = user.lineup.filter(x => x.pos === p.pos).length;
-        const limits = {GK:1, DEF:2, MID:2, FWD:1};
+    // --- INTERACTION HANDLERS (MODAL) ---
+    let selectedPlayerUid = null;
+    let context = null; // 'lineup', 'bench', 'coll'
 
-        if(currentInPos < limits[p.pos]) {
-            user.lineup.push(p);
-            user.collection.splice(collIdx, 1);
-        } else {
-            if(user.bench.length >= 7) return alert("ספסל מלא!");
-            user.bench.push(p);
-            user.collection.splice(collIdx, 1);
-        }
-        saveUser();
+    function handleLineupClick(uid) {
+        selectedPlayerUid = uid; context = 'lineup';
+        showModal("שחקן הרכב", `<button class="btn btn-blue" onclick="moveLineupToBench()">⬇️ הורד לספסל</button>`);
     }
 
-    function removeFromLineup(uid) {
-        const idx = user.lineup.findIndex(p => p.uid === uid);
-        user.collection.push(user.lineup[idx]);
+    function handleBenchClick(uid) {
+        selectedPlayerUid = uid; context = 'bench';
+        const p = user.bench.find(x => x.uid === uid);
+        const sellPrice = p.rating * 10;
+        showModal("שחקן ספסל", `
+            <button class="btn btn-green" onclick="moveBenchToLineup()">⬆️ העלה להרכב</button>
+            <button class="btn btn-red" onclick="quickSellFromBench()">💰 מכירה מהירה (${sellPrice})</button>
+        `);
+    }
+
+    function handleCollectionClick(uid) {
+        selectedPlayerUid = uid; context = 'coll';
+        const p = user.collection.find(x => x.uid === uid);
+        const sellPrice = p.rating * 10;
+        showModal("שחקן אוסף", `
+            <button class="btn btn-blue" onclick="moveCollectionToBench()">העבר לסגל</button>
+            <button class="btn btn-red" onclick="quickSellFromCollection()">💰 מכירה מהירה (${sellPrice})</button>
+        `);
+    }
+
+    function showModal(title, html) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-actions').innerHTML = html;
+        document.getElementById('action-modal').style.display = 'flex';
+    }
+
+    function closeModal(e) {
+        if(e.target.id === 'action-modal') document.getElementById('action-modal').style.display = 'none';
+    }
+
+    // --- LOGIC: MOVES ---
+    function moveLineupToBench() {
+        const idx = user.lineup.findIndex(p => p.uid === selectedPlayerUid);
+        const player = user.lineup[idx];
+        if(user.bench.length >= 7) {
+            user.collection.push(player); // Overflow to collection
+        } else {
+            user.bench.push(player);
+        }
         user.lineup.splice(idx, 1);
         saveUser();
+        document.getElementById('action-modal').style.display = 'none';
     }
 
-    function moveToLineupFromBench(uid) {
-        const idx = user.bench.findIndex(p => p.uid === uid);
-        const p = user.bench[idx];
+    function moveBenchToLineup() {
+        const idx = user.bench.findIndex(p => p.uid === selectedPlayerUid);
+        const player = user.bench[idx];
         
-        const currentInPos = user.lineup.filter(x => x.pos === p.pos).length;
-        const limits = {GK:1, DEF:2, MID:2, FWD:1};
+        // Check pos limit
+        const limit = {GK:1, DEF:2, MID:2, FWD:1};
+        const currentCount = user.lineup.filter(x => x.pos === player.pos).length;
         
-        if(currentInPos < limits[p.pos]) {
-            user.lineup.push(p);
+        if(currentCount < limit[player.pos]) {
+            user.lineup.push(player);
             user.bench.splice(idx, 1);
             saveUser();
         } else {
-            alert(`אין מקום בהרכב ל-${p.pos} נוסף`);
+            alert("אין מקום בעמדה זו! הורד שחקן קודם.");
         }
+        document.getElementById('action-modal').style.display = 'none';
     }
 
-    function quickSell(idx) {
-        if(!confirm("למכור שחקן?")) return;
-        const p = user.collection[idx];
-        user.coins += p.rating * 10;
+    function moveCollectionToBench() {
+        const idx = user.collection.findIndex(p => p.uid === selectedPlayerUid);
+        if(user.bench.length >= 7) return alert("הספסל מלא!");
+        user.bench.push(user.collection[idx]);
         user.collection.splice(idx, 1);
         saveUser();
+        document.getElementById('action-modal').style.display = 'none';
     }
 
-    // --- PACKS ---
+    function quickSellFromCollection() {
+        const idx = user.collection.findIndex(p => p.uid === selectedPlayerUid);
+        const price = user.collection[idx].rating * 10;
+        user.coins += price;
+        user.collection.splice(idx, 1);
+        saveUser();
+        document.getElementById('action-modal').style.display = 'none';
+    }
+
+    function quickSellFromBench() {
+        const idx = user.bench.findIndex(p => p.uid === selectedPlayerUid);
+        const price = user.bench[idx].rating * 10;
+        user.coins += price;
+        user.bench.splice(idx, 1);
+        saveUser();
+        document.getElementById('action-modal').style.display = 'none';
+    }
+
+    // --- PACK OPENING (ANIMATION + QS) ---
     function buyPack(type) {
-        const cost = type === 'basic' ? 250 : 800;
-        if(user.coins < cost) return alert("אין מספיק כסף!");
-        
-        user.coins -= cost;
+        const price = type === 'basic' ? 300 : 1000;
+        if(user.coins < price) return alert("אין מספיק כסף!");
+        user.coins -= price;
+        saveUser();
+
+        // Prepare Card
         tempPackCard = type === 'basic' ? createRandomPlayer(75, 85) : createRandomPlayer(84, 99);
-        
+        const qsPrice = tempPackCard.rating * 10;
+        document.getElementById('pack-qs-btn').innerText = `Quick Sell (${qsPrice})`;
+
+        // Reset UI
         document.getElementById('pack-overlay').style.display = 'flex';
-        document.getElementById('pack-card-inner').classList.remove('flipped');
-        document.getElementById('new-card-display').innerHTML = ''; // clear
+        document.getElementById('pack-obj').style.display = 'flex';
+        document.getElementById('pack-obj').classList.remove('shaking');
+        document.getElementById('pack-reveal').style.display = 'none';
+        document.getElementById('walkout-text').style.display = 'none';
     }
 
     function openPackAnim() {
-        const inner = document.getElementById('pack-card-inner');
-        if(inner.classList.contains('flipped')) return;
-        
-        inner.classList.add('flipped');
-        
-        // Render big card
+        const pack = document.getElementById('pack-obj');
+        pack.classList.add('shaking');
+
         setTimeout(() => {
+            pack.style.display = 'none';
+            document.getElementById('pack-reveal').style.display = 'block';
+            
+            // Render Big Card
             const isElite = tempPackCard.rating >= 88;
-            document.getElementById('new-card-display').innerHTML = `
-                <div class="player-card big-card ${isElite?'elite':''}" style="margin:0 auto; width:160px; height:240px;">
-                    <div class="card-rating" style="font-size:2rem;">${tempPackCard.rating}</div>
-                    <div class="card-pos" style="font-size:1.2rem; top:30px;">${tempPackCard.pos}</div>
-                    <img src="${tempPackCard.img}" class="card-img" style="width:100px; height:100px; margin-top:40px;">
-                    <div class="card-name" style="font-size:1.5rem; margin-top:20px;">${tempPackCard.name}</div>
-                </div>
-                ${isElite ? '<h2 style="color:var(--gold); animation:pulse 0.5s infinite;">WALKOUT!!!</h2>' : ''}
-            `;
-        }, 200);
+            document.getElementById('new-card-container').innerHTML = renderCard(tempPackCard, '');
+            
+            // Effects
+            if(isElite) {
+                document.getElementById('walkout-text').style.display = 'block';
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#fcd34d', '#ffffff'] });
+            } else {
+                confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
+            }
+
+        }, 1200);
     }
 
-    function closePack() {
+    function storeNewCard() {
         user.collection.push(tempPackCard);
         saveUser();
         document.getElementById('pack-overlay').style.display = 'none';
     }
 
-    function claimBonus() {
-        user.coins += 500;
+    function quickSellNewCard() {
+        user.coins += tempPackCard.rating * 10;
         saveUser();
-        alert("קיבלת 500 מטבעות!");
+        document.getElementById('pack-overlay').style.display = 'none';
     }
 
-    // --- MATCH ENGINE ---
-    let matchInterval;
+    // --- TRANSFER MARKET (SIMULATION) ---
+    function refreshMarket() {
+        marketItems = [];
+        for(let i=0; i<6; i++) {
+            const p = createRandomPlayer(75, 92);
+            // Market Price logic (random slightly higher than quicksell)
+            const price = (p.rating * 10) + Math.floor(Math.random() * 200);
+            marketItems.push({player: p, price: price, id: i});
+        }
+        renderMarket();
+    }
 
-    function playMatch() {
-        if(user.lineup.length < 6) return alert("חייב 6 שחקנים בהרכב!");
-        if(user.energy < 2) return alert("אין אנרגיה!");
+    function renderMarket() {
+        const grid = document.getElementById('market-grid');
+        grid.innerHTML = marketItems.map(item => `
+            <div class="market-item">
+                ${renderCard(item.player, '')}
+                <div style="font-size:0.9rem; font-weight:bold; color:var(--gold); margin:5px 0;">${item.price} 💰</div>
+                <button class="btn btn-green" onclick="buyFromMarket(${item.id})">קנה</button>
+            </div>
+        `).join('');
+    }
 
-        user.energy -= 2;
-        saveUser();
-
-        document.getElementById('match-overlay').style.display = 'flex';
-        document.getElementById('end-match-btn').style.display = 'none';
-        document.getElementById('match-log').innerHTML = '';
-        document.getElementById('score-home').innerText = '0';
-        document.getElementById('score-away').innerText = '0';
-
-        let time = 0;
-        let homeScore = 0;
-        let awayScore = 0;
+    function buyFromMarket(id) {
+        const item = marketItems.find(x => x.id === id);
+        if(!item) return;
         
-        // Calc strength
-        const myRating = user.lineup.reduce((a,b)=>a+b.rating,0) / 6;
-        const oppRating = 75 + (user.lvl * 2);
-
-        matchInterval = setInterval(() => {
-            time += 3;
-            document.getElementById('match-timer').innerText = time;
+        if(user.coins >= item.price) {
+            user.coins -= item.price;
+            user.collection.push({...item.player, uid: Date.now()+Math.random().toString()});
+            saveUser();
+            alert(`קנית את ${item.player.name}!`);
             
-            // Events
-            if(Math.random() > 0.7) {
-                const isMe = Math.random() * myRating > Math.random() * oppRating;
-                const logBox = document.getElementById('match-log');
-                
-                if(isMe) {
-                    if(Math.random() > 0.4) {
-                        homeScore++;
-                        logBox.innerHTML = `<div class="log-item goal">⚽ דקה ${time}: גולללל!!! הקבוצה שלך מבקיעה!</div>` + logBox.innerHTML;
-                    } else {
-                        logBox.innerHTML = `<div class="log-item miss">❌ דקה ${time}: החמצה ענקית של החלוץ שלך.</div>` + logBox.innerHTML;
-                    }
-                } else {
-                    if(Math.random() > 0.4) {
-                        awayScore++;
-                        logBox.innerHTML = `<div class="log-item miss" style="border-color:red;">😰 דקה ${time}: ספגת גול...</div>` + logBox.innerHTML;
-                    } else {
-                        logBox.innerHTML = `<div class="log-item">🧤 דקה ${time}: הצלה גדולה של השוער שלך!</div>` + logBox.innerHTML;
-                    }
-                }
-                document.getElementById('score-home').innerText = homeScore;
-                document.getElementById('score-away').innerText = awayScore;
-            }
-
-            if(time >= 90) {
-                clearInterval(matchInterval);
-                let reward = 50;
-                let xp = 10;
-                let msg = "הפסד...";
-                
-                if(homeScore > awayScore) { reward = 300; xp = 50; msg = "ניצחון!"; }
-                else if (homeScore === awayScore) { reward = 100; xp = 20; msg = "תיקו."; }
-
-                document.getElementById('match-log').innerHTML = `<h2 style="text-align:center; color:var(--gold);">${msg} (+${reward}💰)</h2>` + document.getElementById('match-log').innerHTML;
-                
-                user.coins += reward;
-                user.xp += xp;
-                if(user.xp > user.lvl * 100) { user.lvl++; user.xp = 0; alert("עלית רמה!"); }
-                saveUser();
-                document.getElementById('end-match-btn').style.display = 'block';
-            }
-        }, 150);
+            // Remove from market visually
+            marketItems = marketItems.filter(x => x.id !== id);
+            renderMarket();
+        } else {
+            alert("אין לך מספיק מטבעות!");
+        }
     }
 
-    function closeMatch() {
-        document.getElementById('match-overlay').style.display = 'none';
-    }
+    // Auto refresh market every 30s
+    setInterval(refreshMarket, 30000);
+    // Initial load
+    setTimeout(refreshMarket, 1000);
 
-    // --- NAVIGATION ---
-    function switchTab(tabId, btn) {
+    // --- UTILS ---
+    function switchTab(id, btn) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.add('active');
         btn.classList.add('active');
     }
 
-    function sendChat() {
-        const input = document.getElementById('chat-in');
-        if(!input.value) return;
-        const win = document.getElementById('chat-window');
-        win.innerHTML += `<div><span style="color:var(--accent); font-weight:bold;">אני:</span> ${input.value}</div>`;
-        input.value = "";
-        win.scrollTop = win.scrollHeight;
+    function watchAd() {
+        user.coins += 100;
+        saveUser();
+        alert("תודה שצפית! קיבלת 100 מטבעות.");
     }
-
 </script>
 </body>
 </html>
